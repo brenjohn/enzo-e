@@ -547,11 +547,11 @@ std::string Index::bit_string(int max_level,int rank, const int nb3[3]) const
 
       if (i == 0) bits = bits + ":";
       if (i < level) {
-	int ic3[3];
-	child (i+1, &ic3[0], &ic3[1], &ic3[2]);
-	bits = bits + (ic3[axis]?"1":"0");
+        int ic3[3];
+        child (i+1, &ic3[0], &ic3[1], &ic3[2]);
+        bits = bits + (ic3[axis]?"1":"0");
       } else 
-	bits = bits + separator;
+	      bits = bits + separator;
     }
     if (axis<rank-1) bits = bits + separator;
       

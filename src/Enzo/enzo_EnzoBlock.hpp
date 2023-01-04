@@ -91,6 +91,10 @@ public:
 
 public: // interface
 
+//##########################
+void p_initialize_children();
+//##########################
+
 #ifdef BYPASS_CHARM_MEM_LEAK
   /// Initialize the EnzoBlock chare array
   

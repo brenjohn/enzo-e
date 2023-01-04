@@ -119,9 +119,20 @@ void Adapt::coarsen_neighbor (Index index)
 
 void Adapt::refine (const Adapt & adapt_parent, int ic3[3])
 {
+  //###############################
+  std::cout << "Adapt::refine: point 1 " << std::endl;
+  //###############################
   Index index_parent = adapt_parent.index();
 
+  //###############################
+  std::cout << "Adapt::refine: point 2 " << std::endl;
+  //###############################
+
   self_.index_ = index_parent.index_child(ic3);
+
+  //###############################
+  std::cout << "Adapt::refine: point 3 " << std::endl;
+  //###############################
 
   // insert adjacent neighbors
   const int np = adapt_parent.neighbor_list_.size();
@@ -132,6 +143,10 @@ void Adapt::refine (const Adapt & adapt_parent, int ic3[3])
       insert_neighbor(index_neighbor);
     }
   }
+
+  //###############################
+  std::cout << "Adapt::refine: point 4 " << std::endl;
+  //###############################
 
   // add siblings
   const int level = index_parent.level();

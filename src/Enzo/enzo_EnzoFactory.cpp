@@ -108,6 +108,10 @@ void EnzoFactory::create_block_array
     }
   }
 
+  //############################################################
+  Index parent_index(0, 0, 0);
+  enzo_block_array[parent_index].p_initialize_children();
+  //############################################################
   TRACE1("EnzoFactory::create_block_array = %p",&enzo_block_array);
 }
 

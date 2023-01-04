@@ -485,3 +485,47 @@ void EnzoBlock::initialize () throw()
   TRACE ("Exit  EnzoBlock::initialize()\n");
 }
 
+//#####################################
+void EnzoBlock::p_initialize_children(){
+  int count_adapt;
+  int    cycle = 0;
+  double time  = 0.0;
+  double dt    = 0.0;
+  int num_face_level = 0;
+  int * face_level = 0;
+
+  int nx = 16, ny = 16, nz = 16;
+  int num_field_blocks = 1;
+
+  int level = 1;
+
+  const int rank = cello::rank();
+  ItChild it_child(rank);
+  int ic3[3];
+  while (it_child.next(ic3)) {
+
+    Index index_child = index_.index_child(ic3);
+    DataMsg * data_msg = NULL;
+
+    MsgRefine * msg = new MsgRefine
+      (index_child,
+      nx,ny,nz,
+      num_field_blocks,
+      count_adapt = 0,
+      cycle,time,dt,
+      refresh_same,
+      num_face_level, face_level, 
+      &adapt_);
+
+    msg->set_data_msg(data_msg);
+    #ifdef BYPASS_CHARM_MEM_LEAK
+      enzo::simulation()->set_msg_refine (index_child, msg);
+      thisProxy[index_child].insert (process_type(CkMyPe()), MsgType::msg_refine);
+    #else
+      thisProxy[index_child].insert (msg);
+    #endif
+
+    children_.push_back(index_child);
+  }
+}
+//#####################################

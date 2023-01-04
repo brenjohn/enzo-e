@@ -63,6 +63,9 @@ void Block::initial_exit_()
   if (initial_restart) {
     control_sync_barrier (CkIndex_Block::r_restart_enter(NULL));
   } else {
+    //######################################
+    std::cout << "Block " << name() << " entering the adapt phase" << std::endl;
+    //######################################
     control_sync_barrier (CkIndex_Block::r_adapt_enter(NULL));
   }
   performance_stop_(perf_initial);

@@ -231,10 +231,20 @@ void Block::init_refine_
   int ibx,iby,ibz;
   index.array(&ibx,&iby,&ibz);
 
+  //#######################################################################
+  if (index_.level() > 0)
+    std::cout << "my level is " << index_.level() << " " << 1 << std::endl;
+  //#######################################################################
+
   double xm,ym,zm;
   lower(&xm,&ym,&zm);
   double xp,yp,zp;
   upper(&xp,&yp,&zp);
+
+  // //#######################################################################
+  // std::cout << "my lower is " << xm << " " << ym << " " << zm << std::endl;
+  // std::cout << "my upper is " << xp << " " << yp << " " << zp << std::endl;
+  // //#######################################################################
 
   // Allocate block data
 
@@ -246,12 +256,23 @@ void Block::init_refine_
 
   child_data_ = NULL;
 
+  //#######################################################################
+  if (index_.level() > 0)
+    std::cout << "my level is " << index_.level() << " " << 2 << std::endl;
+  //#######################################################################
+
   // Update state
 
   set_state (cycle,time,dt,stop_);
 
   sync_coarsen_.reset();
   sync_coarsen_.set_stop(cello::num_children());
+
+
+  //#######################################################################
+  if (index_.level() > 0)
+    std::cout << "my level is " << index_.level() << " " << 3 << std::endl;
+  //#######################################################################
 
   // Initialize neighbor face levels
 
@@ -269,6 +290,11 @@ void Block::init_refine_
 
   }
 
+  //#######################################################################
+  if (index_.level() > 0)
+    std::cout << "my level is " << index_.level() << " " << 4 << std::endl;
+  //#######################################################################
+
   for (size_t i=0; i<child_face_level_curr_.size(); i++)
     child_face_level_curr_[i] = 0;
 
@@ -284,6 +310,11 @@ void Block::init_refine_
 
   int ic3[3] = {0,0,0};
   if (level > 0) index_.child(level,ic3,ic3+1,ic3+2);
+
+  //#######################################################################
+  if (index_.level() > 0)
+    std::cout << "my level is " << index_.level() << " " << 5 << std::endl;
+  //#######################################################################
 
   if (narray != 0) {
 
@@ -316,6 +347,11 @@ void Block::init_refine_
     control_sync_quiescence (CkIndex_Main::p_adapt_end());
 
   }
+
+  //#######################################################################
+  if (index_.level() > 0)
+    std::cout << "my level is " << index_.level() << " " << 6 << std::endl;
+  //#######################################################################
 
   // Do not migrate the root Block (0,0,0) level (0)
   setMigratable(! index_.is_root());
@@ -564,6 +600,10 @@ void Block::apply_initial_(MsgRefine * msg) throw ()
   const bool is_first_cycle = (cycle_ == cello::config()->initial_cycle);
   const bool initial_new    = cello::config()->initial_new;
 
+  //###############################
+  std::cout << "apply_initial before: my level is " << index_.level() << std::endl;
+  //###############################
+
   if (! is_first_cycle) {
     msg->update(data());
   } else {
@@ -583,6 +623,10 @@ void Block::apply_initial_(MsgRefine * msg) throw ()
       }
     }
   }
+
+  //###############################
+  std::cout << "apply_initial after: my level is " << index_.level() << std::endl;
+  //###############################
 }
 //----------------------------------------------------------------------
 
@@ -747,6 +791,10 @@ void Block::init_adapt_(Adapt * adapt_parent)
   const int level = index_.level();
   const int rank = cello::rank();
 
+  //###############################
+  std::cout << "init_adapt before: my level is " << index_.level() << std::endl;
+  //###############################
+
   int p3[3],b3[3];
   cello::hierarchy()->get_periodicity(p3,p3+1,p3+2);
   cello::hierarchy()->root_blocks(b3,b3+1,b3+2);
@@ -802,7 +850,10 @@ void Block::init_adapt_(Adapt * adapt_parent)
     // parent block
     int ic3[3];
     index_.child(level,ic3,ic3+1,ic3+2);
+    //###############################
+    // problem in here!!!
     adapt_.refine(*adapt_parent,ic3);
+    //###############################
 #ifdef DEBUG_ADAPT
     CkPrintf ("DEBUG_ADAPT %s Block() level > 0\n",
               name().c_str());
@@ -810,6 +861,10 @@ void Block::init_adapt_(Adapt * adapt_parent)
     adapt_.print("init_adapt child after",this);
 #endif    
   }
+
+  //###############################
+  std::cout << "init_adapt after: my level is " << index_.level() << std::endl;
+  //###############################
 }
 
 //----------------------------------------------------------------------
