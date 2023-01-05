@@ -100,6 +100,9 @@ void Simulation::r_initialize_block_array(CkReductionMsg * msg)
 
 void  Block::initial_new_begin_(int level)
 {
+  //############################################################################
+  //std::cout << "Block " << name() << " entering initial_new_begin" << std::endl;
+  //############################################################################
   TRACE_INITIAL("initial_new_begin_",this);
   index_initial_ = 0;
 
@@ -113,6 +116,9 @@ void  Block::initial_new_begin_(int level)
 
 void  Block::initial_new_next_()
 {
+  //############################################################################
+  //std::cout << "Block " << name() << " entering initial_new_next" << std::endl;
+  //############################################################################
   TRACE_INITIAL("initial_new_next_()",this);
   Initial * initial = cello::problem()->initial(index_initial_);
   const bool initial_restart = cello::config()->initial_restart;
@@ -122,9 +128,11 @@ void  Block::initial_new_next_()
     initial->enforce_block(this,nullptr);
   } else {
     bool is_first_cycle = (cycle_ == cello::config()->initial_cycle);
-    if (is_first_cycle && level() <= 0) {
+    //##########################################################################
+    if (is_first_cycle) { //&& level() <= 0) { // why level() <= 0
       initial_exit_();
     }
+    //##########################################################################
   }
 }
 
@@ -132,6 +140,9 @@ void  Block::initial_new_next_()
 
 void  Block::initial_done()
 {
+  //############################################################################
+  //std::cout << "Block " << name() << " entering initial_new_done" << std::endl;
+  //############################################################################
   if (cello::config()->initial_new) {
 
     TRACE_INITIAL("initial_new_done",this);
@@ -147,6 +158,9 @@ void  Block::initial_done()
 
 void  Block::initial_new_continue_()
 {
+  //############################################################################
+  //std::cout << "Block " << name() << " entering initial_new_continue" << std::endl;
+  //############################################################################
   TRACE_INITIAL("initial_new_continue",this);
   index_initial_++;
   initial_new_next_();

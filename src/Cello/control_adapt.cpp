@@ -55,6 +55,9 @@
 
 void Block::adapt_enter_()
 {
+  //############################################################################
+  std::cout << "Block " << name() << " entering adapt_enter" << std::endl;
+  //############################################################################
   TRACE_ADAPT("adapt_enter_",this);
   if ( do_adapt_()) {
 
@@ -71,6 +74,9 @@ void Block::adapt_enter_()
 
 void Block::adapt_begin_()
 {
+  //############################################################################
+  std::cout << "Block " << name() << " entering adapt_begin" << std::endl;
+  //############################################################################
   TRACE_ADAPT("adapt_begin_",this);
 
   cello::simulation()->set_phase(phase_adapt);
@@ -109,6 +115,9 @@ void Block::adapt_begin_()
 /// detection.
 void Block::adapt_called_()
 {
+  //############################################################################
+  std::cout << "Block " << name() << " entering adapt_called" << std::endl;
+  //############################################################################
   TRACE_ADAPT("adapt_called_",this);
   if (! is_leaf()) {
     TRACE_ADAPT("adapt_barrier [not leaf]",this);
@@ -122,6 +131,9 @@ void Block::adapt_called_()
 //----------------------------------------------------------------------
 void Block::adapt_barrier_()
 {
+  //############################################################################
+  std::cout << "Block " << name() << " entering adapt_barrier" << std::endl;
+  //############################################################################
   if (! adapt_balanced_) {
     adapt_balanced_ = true;
     TRACE_ADAPT("calling contribute",this);
@@ -144,6 +156,9 @@ void Block::adapt_barrier_()
 /// adapt_end_().
 void Block::adapt_next_()
 {
+  //############################################################################
+  std::cout << "Block " << name() << " entering adapt_next" << std::endl;
+  //############################################################################
   TRACE_ADAPT("adapt_next contribute called_",this);
   update_levels_();
 
@@ -202,6 +217,9 @@ void Block::update_levels_ ()
 
 void Block::adapt_update_()
 {
+  //############################################################################
+  std::cout << "Block " << name() << " entering adapt_update" << std::endl;
+  //############################################################################
   TRACE_ADAPT("adapt_update_",this);
   if (index_.is_root() && (adapt_changed_ != 0)) {
 #ifdef TRACE_DONE_INSERTING
@@ -224,6 +242,9 @@ void Block::adapt_update_()
 /// been deleted.
 void Block::adapt_end_()
 {
+  //############################################################################
+  std::cout << "Block " << name() << " entering adapt_end" << std::endl;
+  //############################################################################
   TRACE_ADAPT("adapt_end_",this);
   adapt_.reset_face_level(Adapt::LevelType::last);
 
