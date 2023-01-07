@@ -141,20 +141,20 @@ void ItNeighbor::increment_()
   } else {
     if ( face_level() > level_ ) {
       if (is_reset_child_())
-	set_first_child_();
+	      set_first_child_();
       else 
-	next_child_();
+	      next_child_();
     } 
     if (is_reset_child_()) {
       if (rank_ >= 1 && of3_[0] < 1) { ++of3_[0]; }
       else {
-	of3_[0] = -1;
-	if (rank_ >= 2 && of3_[1] < 1) { ++of3_[1]; }
-	else {
-	  of3_[1] = -1;
-	  if (rank_ >= 3 && of3_[2] < 1) { ++of3_[2]; }
-	  else reset();
-	}
+        of3_[0] = -1;
+        if (rank_ >= 2 && of3_[1] < 1) { ++of3_[1]; }
+        else {
+          of3_[1] = -1;
+          if (rank_ >= 3 && of3_[2] < 1) { ++of3_[2]; }
+          else reset();
+        }
       }
     }
   }
@@ -172,9 +172,9 @@ void ItNeighbor::next_child_()
       ic3_[0] = 0;
       if (rank_ >= 2 && ic3_[1] < 1) { ++ic3_[1]; }
       else {
-	ic3_[1] = 0;
-	if (rank_ >= 3 && ic3_[2] < 1) { ++ic3_[2]; }
-	else reset_child_();
+        ic3_[1] = 0;
+        if (rank_ >= 3 && ic3_[2] < 1) { ++ic3_[2]; }
+        else reset_child_();
       }
     }
   }
@@ -225,10 +225,8 @@ bool ItNeighbor::valid_()
 
   for (int axis=0; axis<rank_; axis++) {
     for (int face=0; face < 2; face++) {
-      const bool is_on_boundary =
-	index_.is_on_boundary(axis,of3_[axis],n3_[axis]);
-      const bool is_face =
-	(face==0 && of3_[axis] == -1) || (face==1 && of3_[axis] == 1);
+      const bool is_on_boundary = index_.is_on_boundary(axis,of3_[axis],n3_[axis]);
+      const bool is_face = (face==0 && of3_[axis] == -1) || (face==1 && of3_[axis] == 1);
       const bool is_periodic = periodic_[axis];
       if ( (! is_periodic) && is_on_boundary && is_face ) return false;
     }    

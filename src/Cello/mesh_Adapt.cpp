@@ -169,6 +169,10 @@ void Adapt::refine (const Adapt & adapt_parent, int ic3[3])
   // b.c. with blocking == 1 along an axis
   delete_neighbor(index_parent);
 
+  //###############################
+  std::cout << "Adapt::refine: point 5 " << std::endl;
+  //###############################
+
 }
 
 //----------------------------------------------------------------------

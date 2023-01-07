@@ -75,7 +75,7 @@ void Block::adapt_enter_()
 void Block::adapt_begin_()
 {
   //############################################################################
-  std::cout << "Block " << name() << " entering adapt_begin" << std::endl;
+  std::cout << "Block " << name() << " entering adapt_begin 1" << std::endl;
   //############################################################################
   TRACE_ADAPT("adapt_begin_",this);
 
@@ -87,6 +87,10 @@ void Block::adapt_begin_()
     adapt_.write("adapt",this,DEBUG_CYCLE_START);
 #endif
 
+  //############################################################################
+  std::cout << "Block " << name() << " entering adapt_begin 2" << std::endl;
+  //############################################################################
+
   // Evaluate local mesh refinement criteria
     const int level_maximum = cello::config()->mesh_max_level;
     level_next_ = adapt_compute_desired_level_(level_maximum);
@@ -96,6 +100,10 @@ void Block::adapt_begin_()
     adapt_.initialize_self(index_,level_next_,index_.level());
     adapt_.update_bounds();
   }
+
+  //############################################################################
+  std::cout << "Block " << name() << " entering adapt_begin 3" << std::endl;
+  //############################################################################
 #ifdef DEBUG_ADAPT
   CkPrintf ("DEBUG_ADAPT %s level_next = %d\n",name().c_str(),level_next_);
 #endif
@@ -104,6 +112,10 @@ void Block::adapt_begin_()
 			 sync_id_adapt_begin,
 			 min_face_rank,
 			 neighbor_leaf,0);
+  //############################################################################
+  std::cout << "Block " << name() << " entering adapt_begin 4" << std::endl;
+  //############################################################################
+  
 }
 
 //----------------------------------------------------------------------

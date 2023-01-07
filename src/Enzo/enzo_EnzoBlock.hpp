@@ -93,6 +93,7 @@ public: // interface
 
 //##########################
 void p_initialize_children();
+void p_refine_neighbor(Index index_neighbor);
 //##########################
 
 #ifdef BYPASS_CHARM_MEM_LEAK

@@ -511,10 +511,11 @@ void EnzoBlock::p_initialize_children(){
       (index_child,
       nx,ny,nz,
       num_field_blocks,
-      count_adapt = 0,
-      cycle,time,dt,
-      refresh_same,
-      num_face_level, face_level, 
+      adapt_step_,
+      cycle_,time_,dt_,
+      refresh_fine,
+      num_face_level, 
+      face_level, 
       &adapt_);
 
     msg->set_data_msg(data_msg);
@@ -527,5 +528,46 @@ void EnzoBlock::p_initialize_children(){
 
     children_.push_back(index_child);
   }
+
+  adapt_.set_valid(false);
+  is_leaf_ = false;
+
+  // Update neighbors blocks with new face levels
+  ItNeighbor it_neighbor = this->it_neighbor(index_);
+  int of3[3];
+  while (it_neighbor.next(of3)) {
+    Index index_neighbor = it_neighbor.index();
+    thisProxy[index_neighbor].p_refine_neighbor(index_);
+  }
+}
+
+
+void EnzoBlock::p_refine_neighbor(Index index_neighbor){
+  std::cout << name() << " now replacing neighbor with children" << std::endl;
+  adapt_.refine_neighbor(index_neighbor);
 }
 //#####################################
+// factory->create_block
+// 	(
+// 	 data_msg,
+// 	 thisProxy, index_child,
+// 	 nx,ny,nz,
+// 	 num_field_data,
+// 	 adapt_step_,
+// 	 cycle_,time_,dt_,
+// 	 narray, array, refresh_fine,
+// 	 27,
+//          &child_face_level_curr_.data()[27*IC3(ic3)],
+//          &adapt_,
+// 	 cello::simulation());
+
+//    MsgRefine * msg = new MsgRefine 
+//     (index,
+//      nx,ny,nz,
+//      num_field_blocks,
+//      count_adapt,
+//      cycle,time,dt,
+//      refresh_type,
+//      num_face_level, face_level,
+//      adapt,
+//      io_reader);
