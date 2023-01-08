@@ -308,6 +308,47 @@ void Hierarchy::create_subblock_array
     
 }
 
+//#####################################################################
+void Hierarchy::add_refined_blocks () throw()
+{
+  // determine block size
+  const int mbx = root_size_[0] / blocking_[0];
+  const int mby = root_size_[1] / blocking_[1];
+  const int mbz = root_size_[2] / blocking_[2];
+
+  // Check that blocks evenly subdivide array
+  if (! ((blocking_[0]*mbx == root_size_[0]) &&
+	 (blocking_[1]*mby == root_size_[1]) &&
+	 (blocking_[2]*mbz == root_size_[2]))) {
+
+    ERROR6("Hierarchy::create_block_array()",  
+	   "Blocks must evenly subdivide array: "
+	   "array size = (%d %d %d)  block count = (%d %d %d)",
+	   root_size_[0],
+	   root_size_[1],
+	   root_size_[2],
+	   blocking_[0],
+	   blocking_[1],
+	   blocking_[2]);
+  }
+
+  // CREATE AND INITIALIZE NEW DATA BLOCKS
+
+  int num_field_blocks = 1;
+
+  TRACE("Allocating block_array_");
+
+  DataMsg * data_msg = NULL;
+
+  factory_->add_refined_blocks
+    ( data_msg,
+      block_array_,
+      blocking_[0],blocking_[1],blocking_[2],
+      mbx,mby,mbz,
+      num_field_blocks);
+}
+//#####################################################################
+
 // --------------------------------------------------------------------
 
 void Hierarchy::get_nearest_periodic_image

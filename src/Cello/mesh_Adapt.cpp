@@ -120,18 +120,18 @@ void Adapt::coarsen_neighbor (Index index)
 void Adapt::refine (const Adapt & adapt_parent, int ic3[3])
 {
   //###############################
-  std::cout << "Adapt::refine: point 1 " << std::endl;
+  // std::cout << "Adapt::refine: point 1 " << std::endl;
   //###############################
   Index index_parent = adapt_parent.index();
 
   //###############################
-  std::cout << "Adapt::refine: point 2 " << std::endl;
+  // std::cout << "Adapt::refine: point 2 " << std::endl;
   //###############################
 
   self_.index_ = index_parent.index_child(ic3);
 
   //###############################
-  std::cout << "Adapt::refine: point 3 " << std::endl;
+  // std::cout << "Adapt::refine: point 3 " << std::endl;
   //###############################
 
   // insert adjacent neighbors
@@ -145,7 +145,7 @@ void Adapt::refine (const Adapt & adapt_parent, int ic3[3])
   }
 
   //###############################
-  std::cout << "Adapt::refine: point 4 " << std::endl;
+  // std::cout << "Adapt::refine: point 4 " << std::endl;
   //###############################
 
   // add siblings
@@ -170,7 +170,7 @@ void Adapt::refine (const Adapt & adapt_parent, int ic3[3])
   delete_neighbor(index_parent);
 
   //###############################
-  std::cout << "Adapt::refine: point 5 " << std::endl;
+  // std::cout << "Adapt::refine: point 5 " << std::endl;
   //###############################
 
 }

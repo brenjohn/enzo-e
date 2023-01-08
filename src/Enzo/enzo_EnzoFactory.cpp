@@ -109,11 +109,29 @@ void EnzoFactory::create_block_array
   }
 
   //############################################################
-  Index parent_index(0, 0, 0);
-  enzo_block_array[parent_index].p_initialize_children();
+  // Index parent_index(0, 0, 0);
+  // enzo_block_array[parent_index].p_initialize_children();
   //############################################################
   TRACE1("EnzoFactory::create_block_array = %p",&enzo_block_array);
 }
+
+//#######################################################################
+void EnzoFactory::add_refined_blocks
+(
+ DataMsg * data_msg,
+ CProxy_Block block_array,
+ int nbx, int nby, int nbz,
+ int nx, int ny, int nz,
+ int num_field_blocks
+ ) const throw()
+{
+
+  CProxy_EnzoBlock enzo_block_array = enzo::block_array();
+  Index parent_index(0, 0, 0);
+  enzo_block_array[parent_index].p_initialize_children();
+  TRACE1("EnzoFactory::create_block_array = %p",&enzo_block_array);
+}
+//#######################################################################
 
 //----------------------------------------------------------------------
 

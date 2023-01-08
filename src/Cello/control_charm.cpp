@@ -64,7 +64,7 @@ void Block::initial_exit_()
     control_sync_barrier (CkIndex_Block::r_restart_enter(NULL));
   } else {
     //############################################################################
-    std::cout << "Block " << name() << " entering the adapt phase" << std::endl;
+    // std::cout << "Block " << name() << " entering the adapt phase" << std::endl;
     //############################################################################
     control_sync_barrier (CkIndex_Block::r_adapt_enter(NULL));
   }

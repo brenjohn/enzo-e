@@ -817,6 +817,11 @@ void Simulation::initialize_block_array_() throw()
     }
 
     hierarchy_->block_array().doneInserting();
+
+    //#############################################
+    hierarchy_->add_refined_blocks();
+    hierarchy_->block_array().doneInserting();
+    //#############################################
   }
 }
 

@@ -487,6 +487,15 @@ void EnzoBlock::initialize () throw()
 
 //#####################################
 void EnzoBlock::p_initialize_children(){
+
+  child_face_level_curr_.resize(cello::num_children()*27);
+  initialize_child_face_levels_();
+
+  // std::cout << name() << " - my child face level array has length " << child_face_level_curr_.size() << ":" << std::endl;
+  // for (int x : child_face_level_curr_){
+  //   std::cout << " " << x;
+  // }
+
   int count_adapt;
   int    cycle = 0;
   double time  = 0.0;
@@ -514,8 +523,8 @@ void EnzoBlock::p_initialize_children(){
       adapt_step_,
       cycle_,time_,dt_,
       refresh_fine,
-      num_face_level, 
-      face_level, 
+      27, 
+      &child_face_level_curr_.data()[27*IC3(ic3)], 
       &adapt_);
 
     msg->set_data_msg(data_msg);
@@ -544,16 +553,16 @@ void EnzoBlock::p_initialize_children(){
 
 
 void EnzoBlock::p_refine_neighbor(Index index_neighbor, int if3[3]){
-  std::cout << name() << " now replacing neighbor with children" << std::endl;
+  // std::cout << name() << " now replacing neighbor with children" << std::endl;
   adapt_.set_face_level(if3, Adapt::LevelType::curr, 1);
   adapt_.refine_neighbor(index_neighbor);
-  std::cout << name() << " my neighbors are now:" << std::endl;
-  ItNeighbor it_neighbor = this->it_neighbor(index_);
-  int of3[3];
-  while (it_neighbor.next(of3)) {
-    Index index_neighbor = it_neighbor.index();
-    std::cout << "-------" << name(index_neighbor) << std::endl;
-  }
+  // std::cout << name() << " my neighbors are now:" << std::endl;
+  // ItNeighbor it_neighbor = this->it_neighbor(index_);
+  // int of3[3];
+  // while (it_neighbor.next(of3)) {
+  //   Index index_neighbor = it_neighbor.index();
+  //   std::cout << "-------" << name(index_neighbor) << std::endl;
+  // }
 }
 //#####################################
 // factory->create_block

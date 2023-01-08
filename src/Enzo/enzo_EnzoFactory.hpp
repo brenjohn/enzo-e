@@ -51,6 +51,16 @@ public: // interface
    int nx, int ny, int nz,
    int num_field_blocks) const throw();
 
+  //##############################################################
+  virtual void add_refined_blocks
+  (
+   DataMsg * data_msg,
+   CProxy_Block block_array,
+   int nbx, int nby, int nbz,
+   int nx, int ny, int nz,
+   int num_field_blocks) const throw();
+  //##############################################################
+
   /// Create a new coarse blocks under the Block array.  For Multigrid
   ///  solvers.  Arguments are the same as create_block_array(), plus
   ///  minimal level min_level < 0

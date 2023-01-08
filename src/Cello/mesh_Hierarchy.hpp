@@ -209,6 +209,10 @@ public: // interface
 
   void create_subblock_array (bool allocate_data) throw();
 
+  //###################################################
+  void add_refined_blocks () throw();
+  //###################################################
+
 
   /// Return the number of root-level Blocks along each rank
   void root_blocks (int * nbx, int * nby=0, int * nbz=0) const throw();

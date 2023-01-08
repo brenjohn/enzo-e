@@ -56,7 +56,7 @@
 void Block::adapt_enter_()
 {
   //############################################################################
-  std::cout << "Block " << name() << " entering adapt_enter" << std::endl;
+  // std::cout << "Block " << name() << " entering adapt_enter" << std::endl;
   //############################################################################
   TRACE_ADAPT("adapt_enter_",this);
   if ( do_adapt_()) {
@@ -75,7 +75,7 @@ void Block::adapt_enter_()
 void Block::adapt_begin_()
 {
   //############################################################################
-  std::cout << "Block " << name() << " entering adapt_begin 1" << std::endl;
+  // std::cout << "Block " << name() << " entering adapt_begin 1" << std::endl;
   //############################################################################
   TRACE_ADAPT("adapt_begin_",this);
 
@@ -88,7 +88,7 @@ void Block::adapt_begin_()
 #endif
 
   //############################################################################
-  std::cout << "Block " << name() << " entering adapt_begin 2" << std::endl;
+  // std::cout << "Block " << name() << " entering adapt_begin 2" << std::endl;
   //############################################################################
 
   // Evaluate local mesh refinement criteria
@@ -102,7 +102,7 @@ void Block::adapt_begin_()
   }
 
   //############################################################################
-  std::cout << "Block " << name() << " entering adapt_begin 3" << std::endl;
+  // std::cout << "Block " << name() << " entering adapt_begin 3" << std::endl;
   //############################################################################
 #ifdef DEBUG_ADAPT
   CkPrintf ("DEBUG_ADAPT %s level_next = %d\n",name().c_str(),level_next_);
@@ -113,7 +113,7 @@ void Block::adapt_begin_()
 			 min_face_rank,
 			 neighbor_leaf,0);
   //############################################################################
-  std::cout << "Block " << name() << " entering adapt_begin 4" << std::endl;
+  // std::cout << "Block " << name() << " entering adapt_begin 4" << std::endl;
   //############################################################################
   
 }
@@ -128,7 +128,7 @@ void Block::adapt_begin_()
 void Block::adapt_called_()
 {
   //############################################################################
-  std::cout << "Block " << name() << " entering adapt_called" << std::endl;
+  // std::cout << "Block " << name() << " entering adapt_called" << std::endl;
   //############################################################################
   TRACE_ADAPT("adapt_called_",this);
   if (! is_leaf()) {
@@ -144,7 +144,7 @@ void Block::adapt_called_()
 void Block::adapt_barrier_()
 {
   //############################################################################
-  std::cout << "Block " << name() << " entering adapt_barrier" << std::endl;
+  // std::cout << "Block " << name() << " entering adapt_barrier" << std::endl;
   //############################################################################
   if (! adapt_balanced_) {
     adapt_balanced_ = true;
@@ -169,7 +169,7 @@ void Block::adapt_barrier_()
 void Block::adapt_next_()
 {
   //############################################################################
-  std::cout << "Block " << name() << " entering adapt_next" << std::endl;
+  // std::cout << "Block " << name() << " entering adapt_next" << std::endl;
   //############################################################################
   TRACE_ADAPT("adapt_next contribute called_",this);
   update_levels_();
@@ -230,7 +230,7 @@ void Block::update_levels_ ()
 void Block::adapt_update_()
 {
   //############################################################################
-  std::cout << "Block " << name() << " entering adapt_update" << std::endl;
+  // std::cout << "Block " << name() << " entering adapt_update" << std::endl;
   //############################################################################
   TRACE_ADAPT("adapt_update_",this);
   if (index_.is_root() && (adapt_changed_ != 0)) {
@@ -255,7 +255,7 @@ void Block::adapt_update_()
 void Block::adapt_end_()
 {
   //############################################################################
-  std::cout << "Block " << name() << " entering adapt_end" << std::endl;
+  // std::cout << "Block " << name() << " entering adapt_end" << std::endl;
   //############################################################################
   TRACE_ADAPT("adapt_end_",this);
   adapt_.reset_face_level(Adapt::LevelType::last);
@@ -589,7 +589,7 @@ void Block::adapt_send_level()
     ++index_count[index_neighbor];
   }
   //##################################
-  std::cout << name() << " sending adapt message to:" << std::endl;
+  // std::cout << name() << " sending adapt message to:" << std::endl;
   //##################################
   std::map<Index,MsgAdapt *> msg_map;
 
@@ -630,7 +630,7 @@ void Block::adapt_send_level()
                 name().c_str(),name(index_neighbor).c_str());
 #endif
       //##################################
-      std::cout << "-------" << name(index_neighbor) << std::endl;
+      // std::cout << "-------" << name(index_neighbor) << std::endl;
       //##################################
       thisProxy[index_neighbor].p_adapt_recv_level (msg_map[index_neighbor]);
     }
