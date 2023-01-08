@@ -537,14 +537,23 @@ void EnzoBlock::p_initialize_children(){
   int of3[3];
   while (it_neighbor.next(of3)) {
     Index index_neighbor = it_neighbor.index();
-    thisProxy[index_neighbor].p_refine_neighbor(index_);
+    int if3[3] = {-of3[0], -of3[1], -of3[2]};
+    thisProxy[index_neighbor].p_refine_neighbor(index_, if3);
   }
 }
 
 
-void EnzoBlock::p_refine_neighbor(Index index_neighbor){
+void EnzoBlock::p_refine_neighbor(Index index_neighbor, int if3[3]){
   std::cout << name() << " now replacing neighbor with children" << std::endl;
+  adapt_.set_face_level(if3, Adapt::LevelType::curr, 1);
   adapt_.refine_neighbor(index_neighbor);
+  std::cout << name() << " my neighbors are now:" << std::endl;
+  ItNeighbor it_neighbor = this->it_neighbor(index_);
+  int of3[3];
+  while (it_neighbor.next(of3)) {
+    Index index_neighbor = it_neighbor.index();
+    std::cout << "-------" << name(index_neighbor) << std::endl;
+  }
 }
 //#####################################
 // factory->create_block

@@ -588,7 +588,9 @@ void Block::adapt_send_level()
     index_first[index_neighbor] = true;
     ++index_count[index_neighbor];
   }
-
+  //##################################
+  std::cout << name() << " sending adapt message to:" << std::endl;
+  //##################################
   std::map<Index,MsgAdapt *> msg_map;
 
   while (it_neighbor.next(of3)) {
@@ -627,6 +629,9 @@ void Block::adapt_send_level()
       CkPrintf ("DEBUG_ADAPT %s : %s send_level sending message\n",
                 name().c_str(),name(index_neighbor).c_str());
 #endif
+      //##################################
+      std::cout << "-------" << name(index_neighbor) << std::endl;
+      //##################################
       thisProxy[index_neighbor].p_adapt_recv_level (msg_map[index_neighbor]);
     }
   }

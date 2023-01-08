@@ -193,7 +193,7 @@ module enzo {
 
     //##########################
     entry void p_initialize_children();
-    entry void p_refine_neighbor(Index index_neighbor);
+    entry void p_refine_neighbor(Index index_neighbor, int if3[3]);
     //##########################
  
     // EnzoMethodFeedbackSTARSS synchronization entry methods
