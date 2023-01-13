@@ -1032,6 +1032,27 @@ void Block::index_global
   }
 }
 
+//##################################################################
+Index Block::index_from_global(int ix, int iy, int iz, 
+                               int nx, int ny, int nz,
+                               int ax, int ay, int az)
+{
+  // TODO: Currently this method assumes ax = ay = az and nx = ny = nz.
+  Index index;
+  int min_level = - static_cast<int>(log2(ax));
+  int level = static_cast<int>(log2(1.0 * nx / ax));
+
+  index.set_array(ix >> level, iy >> level, iz >> level);
+  index.set_level(level);
+  for (int i = 0; i < level - min_level; i++) {
+    int l = level - i;
+    index.set_child(l, (ix >> i) & 1, (iy >> i) & 1, (iz >> i) & 1, min_level);
+  }
+
+  return index;
+}
+//##################################################################
+
 //----------------------------------------------------------------------
 
 FieldFace * Block::create_face

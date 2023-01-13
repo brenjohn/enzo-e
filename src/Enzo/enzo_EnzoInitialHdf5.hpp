@@ -59,6 +59,10 @@ public: // interface
   virtual void enforce_block
   ( Block * block, const Hierarchy * hierarchy ) throw();
 
+  //########################################################
+  virtual void enforce_subgrid_block(Block * block) throw();
+  //########################################################
+
   void recv_data (Block * block, MsgInitial * msg_initial);
 
   void copy_dataset_to_field_

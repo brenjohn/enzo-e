@@ -58,6 +58,10 @@ public: // virtual functions
     const Hierarchy  * hierarchy
     ) throw();
 
+  //###############################################
+  virtual void enforce_subgrid_block(Block * block) throw();
+  //###############################################
+
   /// Return whether enforce() expects block != NULL
   virtual bool expects_blocks_allocated() const throw()
   { return true; }
