@@ -771,6 +771,19 @@ void Config::read_mesh_ (Parameters * p) throw()
 		      ax, ay, az);
     }  
   }
+
+  //#####################################################################
+  level_1_lower[0] = p->list_value_integer(0,"Mesh:level_1_lower",-1);
+  level_1_lower[1] = p->list_value_integer(1,"Mesh:level_1_lower",-1);
+  level_1_lower[2] = p->list_value_integer(2,"Mesh:level_1_lower",-1);
+
+  level_1_upper[0] = p->list_value_integer(0,"Mesh:level_1_upper",-1);
+  level_1_upper[1] = p->list_value_integer(1,"Mesh:level_1_upper",-1);
+  level_1_upper[2] = p->list_value_integer(2,"Mesh:level_1_upper",-1);
+
+  // TODO: assert that both upper and lower are given and not just one of them.
+  // TODO: assert the values given above are within the root grid specified above.
+  //#####################################################################
 }
 
 //----------------------------------------------------------------------

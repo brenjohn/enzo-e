@@ -27,7 +27,12 @@ EnzoInitialHdf5::EnzoInitialHdf5
  std::vector < std::string > particle_datasets,
  std::vector < std::string > particle_coords,
  std::vector < std::string > particle_types,
- std::vector < std::string > particle_attributes) throw()
+ std::vector < std::string > particle_attributes,
+ //###########################
+ std::vector < int > field_levels,
+ std::vector < int > particle_levels
+ //###########################
+ ) throw()
    : Initial (cycle,time),
      max_level_(max_level),
      format_ (format),
@@ -42,7 +47,11 @@ EnzoInitialHdf5::EnzoInitialHdf5
      particle_types_ (particle_types),
      particle_attributes_ (particle_attributes),
      l_particle_displacements_(false),
-     particle_position_names_()
+     particle_position_names_(),
+     //##########################################
+     field_levels_(field_levels),
+     particle_levels_(particle_levels)
+     //##########################################
 {
   for (int i=0; i<3; i++) blocking_[i]=blocking[i];
 
@@ -105,7 +114,8 @@ void EnzoInitialHdf5::enforce_block
     return;
   } else if (! is_reader_(block->index())) {
     //#############################################################################
-    std::cout << block->name() << ": exiting enforce block and waiting" << std::endl;
+    const int nnn[3] = {2, 2, 2};
+    std::cout << block->name() << ": exiting enforce block and waiting - " << block->index().bit_string(1, 3, nnn) << std::endl;
     //#############################################################################
     // else if not reader, will be expected to receive data from a reader, so
     // return and sit back and wait, but /don't/ call initial_done() until
@@ -114,12 +124,12 @@ void EnzoInitialHdf5::enforce_block
     return;
   }
   //##################################
-  else if (block->level() == 1){
-    std::cout << block->name() << ": entering enforce subgrid block" << std::endl;
-    enforce_subgrid_block(block);
-    return;
-  }
-  std::cout << block->name() << ": continuing enforce block" << std::endl;
+  // else if (block->level() == 1){
+  //   std::cout << block->name() << ": entering enforce subgrid block" << std::endl;
+  //   enforce_subgrid_block(block);
+  //   return;
+  // }
+  // std::cout << block->name() << ": continuing enforce block" << std::endl;
   //##################################
  
   // Assert: to reach this point, block must be a reading block
@@ -149,6 +159,10 @@ void EnzoInitialHdf5::enforce_block
 
   // Read in Field files
   for (size_t index=0; index<field_files_.size(); index++) {
+
+    //#######################################
+    if (field_levels_.at(index) > 0) continue;
+    //#######################################
 
     // Open the file
 
@@ -220,6 +234,10 @@ void EnzoInitialHdf5::enforce_block
   // Read in particle files
 
   for (size_t index=0; index<particle_files_.size(); index++) {
+
+    //###########################################
+    if (particle_levels_.at(index) > 0) continue;
+    //###########################################
 
     FileHdf5 * file = new FileHdf5 ("./",particle_files_[index]);
     file->file_open();
@@ -338,18 +356,18 @@ void EnzoInitialHdf5::enforce_subgrid_block(Block * block) throw() {
   // Load field data
   for (size_t index=0; index<field_files_.size(); index++) {
     // Open the file
-    FileHdf5 * file = new FileHdf5("./", field_files_[index]);
+    FileHdf5 * file = new FileHdf5("./", field_files_[index] + ".1");
     file->file_open();
 
     // Double-check cosmology parameters if CHECK_COSMO_PARAMS is true
-    if (CHECK_COSMO_PARAMS) {
-      check_cosmology_(file);
-    }
+    // if (CHECK_COSMO_PARAMS) {
+    //   check_cosmology_(file);
+    // }
 
     // Open the dataset
     int m4[4] = {0,0,0,0};
     int type_data = type_unknown;
-    file->data_open(field_datasets_[index], &type_data, m4, m4+1, m4+2, m4+3);
+    file->data_open(field_datasets_[index] + ".1", &type_data, m4, m4+1, m4+2, m4+3);
     ++count_messages;
 
     // TODO: have these set by 'root_range_block' which should take the values
@@ -372,12 +390,12 @@ void EnzoInitialHdf5::enforce_subgrid_block(Block * block) throw() {
                         nx, ny, nz, m4, n4, h4, &IX, &IY, &IZ);
 
           if (index_block == block->index() ) {
-            std::cout << block->name() << "------- copying message: " << ax << " " << ay << " " << az << std::endl;
+            // std::cout << block->name() << "------- copying message: " << ax << " " << ay << " " << az << std::endl;
             copy_dataset_to_field_
               (block, field_names_[index],type_data,
                 data,mx,my,mz,nx,ny,nz,gx,gy,gz,n4,IX,IY);
           } else {
-            std::cout << block->name() << "------- sending message to: " << ax << " " << ay << " " << az << std::endl;
+            // std::cout << block->name() << "------- sending message to: " << ax << " " << ay << " " << az << std::endl;
             MsgInitial * msg_initial = new MsgInitial;
             msg_initial->set_dataset (n4,h4,nx,ny,nz,IX,IY,IZ);
             msg_initial->set_field_data
@@ -395,18 +413,18 @@ void EnzoInitialHdf5::enforce_subgrid_block(Block * block) throw() {
   // Load particle data
   for (size_t index=0; index<particle_files_.size(); index++) {
     // Open the file
-    FileHdf5 * file = new FileHdf5("./", particle_files_[index]);
+    FileHdf5 * file = new FileHdf5("./", particle_files_[index] + ".1");
     file->file_open();
 
     // Double-check cosmology parameters if CHECK_COSMO_PARAMS is true
-    if (CHECK_COSMO_PARAMS) {
-      check_cosmology_(file);
-    }
+    // if (CHECK_COSMO_PARAMS) {
+    //   check_cosmology_(file);
+    // }
 
     // Open the dataset
     int m4[4] = {0,0,0,0};
     int type_data = type_unknown;
-    file->data_open(particle_datasets_[index], &type_data, m4, m4+1, m4+2, m4+3);
+    file->data_open(particle_datasets_[index] + ".1", &type_data, m4, m4+1, m4+2, m4+3);
     ++count_messages;
 
     // TODO: have these set by 'root_range_block' which should take the values
@@ -481,7 +499,7 @@ void EnzoInitialHdf5::enforce_subgrid_block(Block * block) throw() {
 void EnzoBlock::p_initial_hdf5_recv(MsgInitial * msg_initial)
 {
   //########################################################
-  std::cout << name() << " recieved message" << std::endl;
+  // std::cout << name() << " recieved message" << std::endl;
   //########################################################
   EnzoInitialHdf5 * initial = static_cast<EnzoInitialHdf5*> (this->initial());
   initial->recv_data(this,msg_initial);
@@ -492,7 +510,7 @@ void EnzoBlock::p_initial_hdf5_recv(MsgInitial * msg_initial)
 void EnzoInitialHdf5::recv_data (Block * block, MsgInitial * msg_initial)
 {
   //########################################################
-  std::cout << block->name() << " recv_data point 1" << std::endl;
+  // std::cout << block->name() << " recv_data point 1" << std::endl;
   //########################################################
 
   // Exit when count reached (set_stop() may be called at any time)
@@ -503,7 +521,7 @@ void EnzoInitialHdf5::recv_data (Block * block, MsgInitial * msg_initial)
   }
 
   //########################################################
-  std::cout << block->name() << " recv_data point 2" << std::endl;
+  // std::cout << block->name() << " recv_data point 2" << std::endl;
   //########################################################
 
   /// Monitor input progress if monitor_iter_ != 0
@@ -522,13 +540,13 @@ void EnzoInitialHdf5::recv_data (Block * block, MsgInitial * msg_initial)
   count_monitor++;
 
   //########################################################
-  std::cout << block->name() << " recv_data point 3" << std::endl;
+  // std::cout << block->name() << " recv_data point 3" << std::endl;
   //########################################################
   
   // Copy data from message to block data
   if (msg_initial->data_type() == "field") {
   //########################################################
-  std::cout << block->name() << " recv_data point 3a" << std::endl;
+  // std::cout << block->name() << " recv_data point 3a" << std::endl;
   //########################################################
     // extract parameters from MsgInitial
     Field field = block->data()->field();
@@ -556,7 +574,7 @@ void EnzoInitialHdf5::recv_data (Block * block, MsgInitial * msg_initial)
   } else if (msg_initial->data_type() == "particle") {
 
     //########################################################
-    std::cout << block->name() << " recv_data point 3b" << std::endl;
+    // std::cout << block->name() << " recv_data point 3b" << std::endl;
     //########################################################
     // extract parameters from MsgInitial
     Particle particle = block->data()->particle();
@@ -587,7 +605,7 @@ void EnzoInitialHdf5::recv_data (Block * block, MsgInitial * msg_initial)
   }
 
   //########################################################
-  std::cout << block->name() << " recv_data point 4" << std::endl;
+  // std::cout << block->name() << " recv_data point 4" << std::endl;
   //########################################################
   if (sync_msg->next()) {
     // reset for next call (note not resetting at start since may get
@@ -596,7 +614,7 @@ void EnzoInitialHdf5::recv_data (Block * block, MsgInitial * msg_initial)
     block->initial_done();
   }
   //########################################################
-  std::cout << block->name() << " recv_data point 5" << std::endl;
+  // std::cout << block->name() << " recv_data point 5" << std::endl;
   //########################################################
   delete msg_initial;
 }
@@ -730,11 +748,11 @@ int EnzoInitialHdf5::is_reader_ (Index index)
                         ( a3[0] % blocking_[0] == 0) &&
                         ( a3[1] % blocking_[1] == 0) &&
                         ( a3[2] % blocking_[2] == 0));
-  bool level_1_reader = ( (level == 1) &&
-                        ( t3[0] == 0) &&
-                        ( t3[1] == 0) &&
-                        ( t3[2] == 0));
-  return level_0_reader || level_1_reader;
+  // bool level_1_reader = ( (level == 1) &&
+  //                       ( t3[0] == 0) &&
+  //                       ( t3[1] == 0) &&
+  //                       ( t3[2] == 0));
+  return level_0_reader; // || level_1_reader;
   //##########################################
 }
 

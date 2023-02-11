@@ -103,6 +103,10 @@ module mesh {
     // *** INITIAL ***
     //--------------------------------------------------
 
+    //##################################################
+    entry void p_say_hello();
+    //##################################################
+
     entry void p_initial_exit();
     entry void r_end_initialize(CkReductionMsg *);
     entry void r_initial_new_next(CkReductionMsg *);

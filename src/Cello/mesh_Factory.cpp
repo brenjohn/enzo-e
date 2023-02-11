@@ -132,20 +132,14 @@ void Factory::create_block_array
 }
 
 //#######################################################################
-void Factory::add_refined_blocks
-(
- DataMsg * data_msg,
- CProxy_Block block_array,
- int nbx, int nby, int nbz,
- int nx, int ny, int nz,
- int num_field_blocks
- ) const throw()
+void Factory::add_refined_blocks(int lower[3], int upper[3]) const throw()
 {
 
   // CProxy_EnzoBlock enzo_block_array = enzo::block_array();
-  Index parent_index(0, 0, 0);
+  // Index parent_index(0, 0, 0);
   // block_array[parent_index].p_initialize_children();
-  TRACE1("EnzoFactory::create_block_array = %p",&block_array);
+  // TRACE1("EnzoFactory::create_block_array = %p",&block_array);
+  return;
 }
 //#######################################################################
 

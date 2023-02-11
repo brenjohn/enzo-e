@@ -933,6 +933,10 @@ void EnzoConfig::read_initial_hdf5_(Parameters * p)
     const std::string dataset = p->value_string (file_id + "dataset","");
     const std::string coords  = p->value_string (file_id + "coords","xyz");
 
+    //#########################################################
+    const int level  = p->value_integer (file_id + "level", 0);
+    //#########################################################
+
     if (type == "particle") {
 
       const std::string attribute = p->value_string (file_id+"attribute","");
@@ -942,6 +946,9 @@ void EnzoConfig::read_initial_hdf5_(Parameters * p)
       initial_hdf5_particle_coords.    push_back(coords);
       initial_hdf5_particle_types.     push_back(name);
       initial_hdf5_particle_attributes.push_back(attribute);
+      //#################################################
+      initial_hdf5_particle_levels.    push_back(level);
+      //#################################################
 
     } else if (type == "field") {
 
@@ -949,6 +956,9 @@ void EnzoConfig::read_initial_hdf5_(Parameters * p)
       initial_hdf5_field_datasets.     push_back(dataset);
       initial_hdf5_field_names.        push_back(name);
       initial_hdf5_field_coords.       push_back(coords);
+      //#################################################
+      initial_hdf5_field_levels.       push_back(level);
+      //#################################################
 
     } else {
       ERROR2 ("EnzoConfig::read",

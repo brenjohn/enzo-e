@@ -662,6 +662,12 @@ public: // attributes
   std::vector < std::string > initial_hdf5_particle_types;
   std::vector < std::string > initial_hdf5_particle_attributes;
 
+  //############################################################
+  // TODO: check if these need to be pup-ed
+  std::vector < int > initial_hdf5_field_levels;
+  std::vector < int > initial_hdf5_particle_levels;
+  //############################################################
+
   /// EnzoInitialInclinedWave
   double                     initial_inclinedwave_alpha;
   double                     initial_inclinedwave_beta;

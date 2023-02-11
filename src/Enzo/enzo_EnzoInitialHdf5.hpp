@@ -31,7 +31,11 @@ public: // interface
                   std::vector < std::string > particle_datasets,
                   std::vector < std::string > particle_coords,
                   std::vector < std::string > particle_types,
-                  std::vector < std::string > particle_attributes
+                  std::vector < std::string > particle_attributes,
+                  //##################################
+                  std::vector < int > field_levels,
+                  std::vector < int > particle_levels
+                  //##################################
                   ) throw();
 
   /// Constructor
@@ -183,6 +187,11 @@ protected: // attributes
   vecstr_type particle_attributes_;
   bool l_particle_displacements_;
   std::string particle_position_names_[3];
+
+  //######################################
+  std::vector < int > field_levels_;
+  std::vector < int > particle_levels_;
+  //######################################
 
   /// Index of the Sync object for counting incoming messages if not
   /// a reader; used to call initial_done() (only) after all expected

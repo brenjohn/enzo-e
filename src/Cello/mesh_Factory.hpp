@@ -80,13 +80,7 @@ public: // interface
    int num_field_blocks) const throw();
 
   //##############################################################
-  virtual void add_refined_blocks
-  (
-   DataMsg * data_msg,
-   CProxy_Block block_array,
-   int nbx, int nby, int nbz,
-   int nx, int ny, int nz,
-   int num_field_blocks) const throw();
+  virtual void add_refined_blocks(int lower[3], int upper[3]) const throw();
   //##############################################################
 
   /// Create a new Block

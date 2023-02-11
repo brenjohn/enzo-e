@@ -471,6 +471,11 @@ public: // attributes
   int                        mesh_min_level;
   int                        mesh_max_level;
   int                        mesh_max_initial_level;
+  //########################################################
+  // TODO: check if these need to be puped
+  int                        level_1_lower[3];
+  int                        level_1_upper[3];
+  //########################################################
 
   // Method
 

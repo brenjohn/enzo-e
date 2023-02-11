@@ -104,6 +104,11 @@ PARALLEL_MAIN_BEGIN
   g_parameters.write(stdout,param_write_monitor);
   g_enzo_config.read(&g_parameters);
 
+  //#######################
+  // std::cout << "------------------ " << g_enzo_config.level_1_parent_blocks_lower[0] << std::endl;
+  // CkExit();
+  //#######################
+
   // Initialize unit testing
 
   const int ip = CkMyPe();

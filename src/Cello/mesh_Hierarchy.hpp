@@ -210,7 +210,7 @@ public: // interface
   void create_subblock_array (bool allocate_data) throw();
 
   //###################################################
-  void add_refined_blocks () throw();
+  void add_refined_blocks (int lower[3], int upper[3]) throw();
   //###################################################
 
 

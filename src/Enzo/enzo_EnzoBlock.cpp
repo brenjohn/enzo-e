@@ -488,8 +488,12 @@ void EnzoBlock::initialize () throw()
 //#####################################
 void EnzoBlock::p_initialize_children(){
 
+  const int nb[3] = {2, 2, 2};
+  std::cout << "p_initialize_children being called by: " << name() << std::endl;
+  std::cout << "p_initialize_children being called by: " << thisIndex.bit_string(0, 3, nb) << std::endl;
+
   child_face_level_curr_.resize(cello::num_children()*27);
-  initialize_child_face_levels_();
+  initialize_child_face_levels_(); // Note this is called in init_refine, could avoid this if wait until root blocks initialized.
 
   // std::cout << name() << " - my child face level array has length " << child_face_level_curr_.size() << ":" << std::endl;
   // for (int x : child_face_level_curr_){
@@ -500,20 +504,23 @@ void EnzoBlock::p_initialize_children(){
   int    cycle = 0;
   double time  = 0.0;
   double dt    = 0.0;
-  int num_face_level = 0;
-  int * face_level = 0;
+  // int num_face_level = 0;
+  // int * face_level = 0;
 
   int nx = 16, ny = 16, nz = 16;
   int num_field_blocks = 1;
 
-  int level = 1;
+  // int level = 1;
 
   const int rank = cello::rank();
   ItChild it_child(rank);
   int ic3[3];
   while (it_child.next(ic3)) {
 
+    std::cout << "parent index: " << index_.bit_string(1, 3, nb) << std::endl;
     Index index_child = index_.index_child(ic3);
+
+    std::cout << "creating " << index_child.bit_string(1, 3, nb) << std::endl;
     DataMsg * data_msg = NULL;
 
     MsgRefine * msg = new MsgRefine
@@ -565,27 +572,3 @@ void EnzoBlock::p_refine_neighbor(Index index_neighbor, int if3[3]){
   // }
 }
 //#####################################
-// factory->create_block
-// 	(
-// 	 data_msg,
-// 	 thisProxy, index_child,
-// 	 nx,ny,nz,
-// 	 num_field_data,
-// 	 adapt_step_,
-// 	 cycle_,time_,dt_,
-// 	 narray, array, refresh_fine,
-// 	 27,
-//          &child_face_level_curr_.data()[27*IC3(ic3)],
-//          &adapt_,
-// 	 cello::simulation());
-
-//    MsgRefine * msg = new MsgRefine 
-//     (index,
-//      nx,ny,nz,
-//      num_field_blocks,
-//      count_adapt,
-//      cycle,time,dt,
-//      refresh_type,
-//      num_face_level, face_level,
-//      adapt,
-//      io_reader);

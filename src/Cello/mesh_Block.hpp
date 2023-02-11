@@ -184,6 +184,9 @@ public: // interface
                           int ax, int ay, int az);
 
   //Index index_from_global(int ix, int iy, int iz, int level, int min_level)
+
+  void p_say_hello();
+  virtual void create_child_blocks();
   //#####################################################
 
   /// Return which block faces lie along a domain boundary

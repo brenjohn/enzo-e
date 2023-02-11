@@ -69,6 +69,9 @@ Block::Block ( process_type ip_source, MsgType msg_type )
     index_method_(-1),
     index_solver_(),
     refresh_()
+    //##############
+    // index_(thisIndex)
+    //##############
 {
 #ifdef TRACE_BLOCK
 
@@ -109,6 +112,11 @@ void Block::p_set_msg_refine(MsgRefine * msg)
   apply_initial_(msg);
 
   performance_stop_(perf_block);
+
+  //####################
+  create_child_blocks();
+  //####################
+
 #ifdef TRACE_BLOCK
   {
   CkPrintf ("%d %s index TRACE_BLOCK p_set_msg_refine(MsgRefine) done\n",
@@ -1050,6 +1058,15 @@ Index Block::index_from_global(int ix, int iy, int iz,
   }
 
   return index;
+}
+
+void Block::p_say_hello(){
+  const int nb[3] = {2, 2, 2};
+  std::cout << "Hello from block " << name() << " : " << thisIndex.bit_string(0, 3, nb) << std::endl;
+}
+
+void Block::create_child_blocks(){
+  return;
 }
 //##################################################################
 

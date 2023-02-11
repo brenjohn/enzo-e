@@ -65,6 +65,16 @@ void Block::initial_exit_()
   } else {
     //############################################################################
     // std::cout << "Block " << name() << " entering the adapt phase" << std::endl;
+    // CProxy_EnzoBlock enzo_block_array = enzo::block_array();
+
+    // for (int x = 0; x <= 1; x++){
+    //   for (int y = 0; y <= 1; y++){
+    //     for (int z = 0; z <= 1; z++){
+    //       Index ind(x, y, z);
+    //       thisProxy[ind].p_say_hello();
+    //     }
+    //   }
+    // }
     //############################################################################
     control_sync_barrier (CkIndex_Block::r_adapt_enter(NULL));
   }
