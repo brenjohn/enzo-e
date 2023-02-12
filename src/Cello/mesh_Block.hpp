@@ -437,6 +437,11 @@ public:
 
   void p_adapt_called()
   {
+    //#################
+    if (name() == "B01:1_10:1_10:0") {
+      std::cout << "==============================" << name() << " now in p_adapt_called" << std::endl;
+    }
+    //#################
     performance_start_(perf_adapt_notify);
     adapt_called_();
     performance_stop_(perf_adapt_notify);

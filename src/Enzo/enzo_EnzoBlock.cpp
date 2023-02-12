@@ -486,14 +486,14 @@ void EnzoBlock::initialize () throw()
 }
 
 //#####################################
-void EnzoBlock::p_initialize_children(){
+void EnzoBlock::instantiate_children(){
 
-  const int nb[3] = {2, 2, 2};
-  std::cout << "p_initialize_children being called by: " << name() << std::endl;
-  std::cout << "p_initialize_children being called by: " << thisIndex.bit_string(0, 3, nb) << std::endl;
+  // const int nb[3] = {2, 2, 2};
+  std::cout << "initialize_children being called by: " << name() << std::endl;
+  // std::cout << "p_initialize_children being called by: " << thisIndex.bit_string(0, 3, nb) << std::endl;
 
   child_face_level_curr_.resize(cello::num_children()*27);
-  initialize_child_face_levels_(); // Note this is called in init_refine, could avoid this if wait until root blocks initialized.
+  //initialize_child_face_levels_(); // Note this is called in init_refine, could avoid this if wait until root blocks initialized.
 
   // std::cout << name() << " - my child face level array has length " << child_face_level_curr_.size() << ":" << std::endl;
   // for (int x : child_face_level_curr_){
@@ -507,7 +507,13 @@ void EnzoBlock::p_initialize_children(){
   // int num_face_level = 0;
   // int * face_level = 0;
 
-  int nx = 16, ny = 16, nz = 16;
+  int ix, iy, iz, nx, ny, nz;
+  index_global(&ix, &iy, &iz, &nx, &ny, &nz);
+  nx = nx << 1; // number of mesh points on next level is double that for current level.
+  ny = ny << 1;
+  nz = nz << 1;
+
+  // int nx = 128, ny = 128, nz = 128;
   int num_field_blocks = 1;
 
   // int level = 1;
@@ -517,10 +523,10 @@ void EnzoBlock::p_initialize_children(){
   int ic3[3];
   while (it_child.next(ic3)) {
 
-    std::cout << "parent index: " << index_.bit_string(1, 3, nb) << std::endl;
+    // std::cout << "parent index: " << index_.bit_string(1, 3, nb) << std::endl;
     Index index_child = index_.index_child(ic3);
 
-    std::cout << "creating " << index_child.bit_string(1, 3, nb) << std::endl;
+    // std::cout << "creating " << index_child.bit_string(1, 3, nb) << std::endl;
     DataMsg * data_msg = NULL;
 
     MsgRefine * msg = new MsgRefine
@@ -545,8 +551,6 @@ void EnzoBlock::p_initialize_children(){
     children_.push_back(index_child);
   }
 
-  adapt_.set_valid(false);
-  is_leaf_ = false;
 
   // Update neighbors blocks with new face levels
   ItNeighbor it_neighbor = this->it_neighbor(index_);
@@ -556,6 +560,10 @@ void EnzoBlock::p_initialize_children(){
     int if3[3] = {-of3[0], -of3[1], -of3[2]};
     thisProxy[index_neighbor].p_refine_neighbor(index_, if3);
   }
+
+
+  adapt_.set_valid(false);
+  is_leaf_ = false;
 }
 
 
@@ -570,5 +578,39 @@ void EnzoBlock::p_refine_neighbor(Index index_neighbor, int if3[3]){
   //   Index index_neighbor = it_neighbor.index();
   //   std::cout << "-------" << name(index_neighbor) << std::endl;
   // }
+}
+
+void EnzoBlock::create_child_blocks(){
+
+  bool spawn_children = spawn_child_blocks();
+
+  if (spawn_children) {
+    //std::cout << name() << " should spawn children" << std::endl;
+    instantiate_children();
+  } else {
+    //std::cout << name() << " should not spawn children" << std::endl;
+  }
+
+  return;
+}
+
+bool EnzoBlock::spawn_child_blocks(){
+  if (index_.level() == 0) {
+    // EnzoConfig* config = enzo::simulation()->config();
+    const int* lower_block = enzo::simulation()->config()->level_1_lower;
+    const int* upper_block = enzo::simulation()->config()->level_1_upper;
+
+    int ix, iy, iz, nx, ny, nz;
+    index_global(&ix, &iy, &iz, &nx, &ny, &nz);
+
+    if (lower_block[0] <= ix && ix < upper_block[0]) {
+      if (lower_block[1] <= iy && iy < upper_block[1]) {
+        if (lower_block[2] <= iz && iz < upper_block[2]) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 //#####################################

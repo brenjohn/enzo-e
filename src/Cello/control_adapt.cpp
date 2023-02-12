@@ -76,6 +76,9 @@ void Block::adapt_begin_()
 {
   //############################################################################
   // std::cout << "Block " << name() << " entering adapt_begin 1" << std::endl;
+  if (name() == "B01:1_10:1_10:0") {
+    std::cout << "==============================" << name() << " now in adapt_begin 1" << std::endl;
+  }
   //############################################################################
   TRACE_ADAPT("adapt_begin_",this);
 
@@ -89,6 +92,9 @@ void Block::adapt_begin_()
 
   //############################################################################
   // std::cout << "Block " << name() << " entering adapt_begin 2" << std::endl;
+  // if (name() == "B01:1_10:1_10:0") {
+  //   std::cout << "==============================" << name() << " now in adapt_begin 2" << std::endl;
+  // }
   //############################################################################
 
   // Evaluate local mesh refinement criteria
@@ -103,6 +109,9 @@ void Block::adapt_begin_()
 
   //############################################################################
   // std::cout << "Block " << name() << " entering adapt_begin 3" << std::endl;
+  // if (name() == "B01:1_10:1_10:0") {
+  //   std::cout << "==============================" << name() << " now in adapt_begin 3" << std::endl;
+  // }
   //############################################################################
 #ifdef DEBUG_ADAPT
   CkPrintf ("DEBUG_ADAPT %s level_next = %d\n",name().c_str(),level_next_);
@@ -114,6 +123,9 @@ void Block::adapt_begin_()
 			 neighbor_leaf,0);
   //############################################################################
   // std::cout << "Block " << name() << " entering adapt_begin 4" << std::endl;
+  // if (name() == "B01:1_10:1_10:0") {
+  //   std::cout << "==============================" << name() << " now in adapt_begin 4" << std::endl;
+  // }
   //############################################################################
   
 }
@@ -129,6 +141,9 @@ void Block::adapt_called_()
 {
   //############################################################################
   // std::cout << "Block " << name() << " entering adapt_called" << std::endl;
+  if (name() == "B01:1_10:1_10:0") {
+    std::cout << "==============================" << name() << " now in adapt_called" << std::endl;
+  }
   //############################################################################
   TRACE_ADAPT("adapt_called_",this);
   if (! is_leaf()) {
@@ -144,7 +159,7 @@ void Block::adapt_called_()
 void Block::adapt_barrier_()
 {
   //############################################################################
-  // std::cout << "Block " << name() << " entering adapt_barrier" << std::endl;
+  std::cout << "Block " << name() << " entering adapt_barrier" << std::endl;
   //############################################################################
   if (! adapt_balanced_) {
     adapt_balanced_ = true;
@@ -589,7 +604,11 @@ void Block::adapt_send_level()
     ++index_count[index_neighbor];
   }
   //##################################
+  if (name() == "B01:1_10:1_10:0") {
+    std::cout << "==============================" << name() << " now in adapt_send_level" << std::endl;
+  }
   // std::cout << name() << " sending adapt message to:" << std::endl;
+  // int count = 0;
   //##################################
   std::map<Index,MsgAdapt *> msg_map;
 
@@ -629,8 +648,21 @@ void Block::adapt_send_level()
       CkPrintf ("DEBUG_ADAPT %s : %s send_level sending message\n",
                 name().c_str(),name(index_neighbor).c_str());
 #endif
-      //##################################
-      // std::cout << "-------" << name(index_neighbor) << std::endl;
+      //#################################
+      // count++;
+      // std::cout << "-------" << name(index_neighbor) << " " << count << std::endl;
+
+      if (name() == "B01_11_10") {
+        std::cout << name() << " sending levels to >>> " << name(index_neighbor) << std::endl;
+      }
+
+      if (name(index_neighbor) == "B01_11_10") {
+        std::cout << name(index_neighbor) << " getting levels from <<< " << name() << std::endl;
+      }
+
+      if (name() == "B01:1_10:1_10:0") {
+        std::cout << "-----------------------------------" << name() << " sending levels to >>> " << name(index_neighbor) << std::endl;
+      }
       //##################################
       thisProxy[index_neighbor].p_adapt_recv_level (msg_map[index_neighbor]);
     }
@@ -702,6 +734,9 @@ void Block::adapt_recv_level
  bool can_coarsen
  )
 {
+  //########################################
+  // std::cout << name() << " recieving adapt message" << std::endl;
+  //########################################
   bool changed = false;
   int level_min;
   performance_start_(perf_adapt_update);
@@ -834,12 +869,26 @@ void Block::adapt_recv_level
   if (changed) {
     level_next_ = level_min;
     adapt_send_level();
+    //######################
+    std::cout << name() << " changed is true" << std::endl;
+    //######################
   }
   TRACE_ADAPT("testing convergence",this);
+  //######################
+  if (name() == "B01_11_10") {
+    std::cout << name() << " neighbors_converged is " << adapt_.neighbors_converged() << std::endl;
+    std::cout << name() << " is_converged is " << adapt_.is_converged() << std::endl;
+  }
+  //######################
   if (adapt_.neighbors_converged() && adapt_.is_converged()) {
     TRACE_ADAPT("adapt_barrier [recv_level]",this);
     adapt_barrier_();
-  }
+  } 
+  //######################
+  // else {
+  //   std::cout << name() << " skipping barrier!!!" << std::endl;
+  // }
+  //######################
   performance_stop_(perf_adapt_update);
   performance_start_(perf_adapt_update_sync);
 }

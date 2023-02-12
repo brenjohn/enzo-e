@@ -92,8 +92,10 @@ public:
 public: // interface
 
 //##########################
-void p_initialize_children();
+void instantiate_children();
 void p_refine_neighbor(Index index_neighbor, int if3[3]);
+virtual void create_child_blocks();
+bool spawn_child_blocks();
 //##########################
 
 #ifdef BYPASS_CHARM_MEM_LEAK

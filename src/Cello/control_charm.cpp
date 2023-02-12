@@ -256,6 +256,14 @@ void Block::control_sync_neighbor(int entry_point, int id_sync,
     ++num_neighbors;
 
     Index index_neighbor = it_neighbor.index();
+    //###########################################
+    if (name() == "B01:1_10:1_10:0") {
+      std::cout << "-=-=-=-=-=-=-" << name(index_neighbor) << " is a neighbour" << std::endl;
+    }
+    if (name(index_neighbor) == "B01:1_10:1_10:0") {
+      std::cout << "-=-=-=-=-=-=-" << name() << " is a neighbour 2" << std::endl;
+    }
+    //###########################################
 
 #ifdef DEBUG_CONTROL
     CkPrintf ("%s DEBUG_CONTROL calling p_control_sync_count (%d %d 0)\n",
@@ -265,6 +273,11 @@ void Block::control_sync_neighbor(int entry_point, int id_sync,
     thisProxy[index_neighbor].p_control_sync_count(entry_point,id_sync,0);
 
   }
+  //###########################################
+  if (name() == "B01:1_10:1_10:0") {
+    std::cout << "==============================" << name() << " num_neighbours is " << num_neighbors << std::endl;
+  }
+  //###########################################
 #ifdef DEBUG_CONTROL
     CkPrintf ("%s DEBUG_CONTROL calling p_control_sync_count count %d (%d %d 0)\n",
 	      name().c_str(),num_neighbors, entry_point,id_sync);
@@ -323,6 +336,13 @@ void Block::control_sync_count (int entry_point, int id_sync, int count)
   ++sync_count_[id_sync];
 
   // sync_max_ reached: continue and reset counter
+
+  //###########################################
+  if (name() == "B01:1_10:1_10:0") {
+    std::cout << "==============================" << name() << " max   " << sync_max_[id_sync] << std::endl;
+    std::cout << "==============================" << name() << " count " << sync_count_[id_sync] << std::endl;
+  }
+  //###########################################
 
   if (sync_max_[id_sync] > 0 && sync_count_[id_sync] >= sync_max_[id_sync]) {
 

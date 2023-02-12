@@ -103,19 +103,20 @@ void EnzoInitialHdf5::enforce_block
 ( Block * block, const Hierarchy * hierarchy_unused ) throw()
 {
   //#######################################################################
-  std::cout << block->name() << ": entering enforce block" << std::endl;
+  // std::cout << block->name() << ": entering enforce block" << std::endl;
   //#######################################################################
-  if (! (0 <= block->level() && block->level() <= max_level_) ) {
+  // if (! (0 <= block->level() && block->level() <= max_level_) ) {
+  if (! (0 <= block->level() && block->level() <= 0) ) {
     //#############################################################################
-    std::cout << block->name() << ": not in range for enforce block: " << max_level_ << std::endl;
+    // std::cout << block->name() << ": not in range for enforce block: " << max_level_ << std::endl;
     //#############################################################################
     // if level not in range, then return and call initial_done()
     block->initial_done();
     return;
   } else if (! is_reader_(block->index())) {
     //#############################################################################
-    const int nnn[3] = {2, 2, 2};
-    std::cout << block->name() << ": exiting enforce block and waiting - " << block->index().bit_string(1, 3, nnn) << std::endl;
+    // const int nnn[3] = {2, 2, 2};
+    // std::cout << block->name() << ": exiting enforce block and waiting - " << block->index().bit_string(1, 3, nnn) << std::endl;
     //#############################################################################
     // else if not reader, will be expected to receive data from a reader, so
     // return and sit back and wait, but /don't/ call initial_done() until

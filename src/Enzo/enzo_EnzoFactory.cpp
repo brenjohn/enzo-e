@@ -149,7 +149,7 @@ void EnzoFactory::add_refined_blocks(int lower[3], int upper[3]) const throw()
         int ax, ay, az;
         parent_index.array(&ax, &ay, &az);
         std::cout << ax << " " << ay << " " << az << std::endl;
-        enzo_block_array[parent_index].p_initialize_children();
+        // enzo_block_array[parent_index].p_initialize_children();
         TRACE1("EnzoFactory::create_block_array = %p",&enzo_block_array);
       }
     }
