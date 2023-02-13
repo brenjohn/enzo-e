@@ -64,7 +64,8 @@ public: // interface
   ( Block * block, const Hierarchy * hierarchy ) throw();
 
   //########################################################
-  virtual void enforce_subgrid_block(Block * block) throw();
+  // virtual void enforce_subgrid_block(Block * block) throw();
+  void enforce_block1( Block * block, const Hierarchy * hierarchy_unused ) throw();
   //########################################################
 
   void recv_data (Block * block, MsgInitial * msg_initial);

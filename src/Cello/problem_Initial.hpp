@@ -59,7 +59,7 @@ public: // virtual functions
     ) throw();
 
   //###############################################
-  virtual void enforce_subgrid_block(Block * block) throw();
+  // virtual void enforce_subgrid_block(Block * block) throw();
   //###############################################
 
   /// Return whether enforce() expects block != NULL

@@ -33,7 +33,7 @@ void Initial::enforce_block(Block * block, const Hierarchy * hierarchy) throw()
 }
 
 //##########################################################
-void Initial::enforce_subgrid_block(Block * block) throw()
-{
-}
+// void Initial::enforce_subgrid_block(Block * block) throw()
+// {
+// }
 //##########################################################

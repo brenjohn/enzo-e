@@ -613,4 +613,18 @@ bool EnzoBlock::spawn_child_blocks(){
   }
   return false;
 }
+
+// bool EnzoBlock::level_1_lower(int* xl, int* yl, int* zl){
+//   const int* lower_block = enzo::simulation()->config()->level_1_lower;
+//   *xl = lower_block[0];
+//   *yl = lower_block[1];
+//   *zl = lower_block[2];
+// }
+
+// bool EnzoBlock::level_1_upper(int* xu, int* yu, int* zu){
+//   const int* upper_block = enzo::simulation()->config()->level_1_upper;
+//   *xl = upper_block[0];
+//   *yl = upper_block[1];
+//   *zl = upper_block[2];
+// }
 //#####################################
