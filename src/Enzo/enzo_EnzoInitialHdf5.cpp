@@ -782,24 +782,27 @@ void EnzoInitialHdf5::my_enforce_block
 
   // Read in Field files
   for (size_t index=0; index<field_files_.size(); index++) {
-    read_data(count_messages,
+    load_data(count_messages,
               index, 
               field_files_,
               field_datasets_,
               field_coords_,
-              ...)
+              ...,
+              field_loader)
   }
 
   // Read in particle files
   for (size_t index=0; index<particle_files_.size(); index++) {
-    read_data(count_messages,
+    load_data(count_messages,
               index, 
               particle_files_,
               particle_datasets_,
               particle_coords_,
-              ...)
+              ...,
+              particle_loader)
   }
 
+  // TODO: need to iterate over child blocks here also.
   for (int ax=array_lower[0]; ax<array_upper[0]; ax++) {
     for (int ay=array_lower[1]; ay<array_upper[1]; ay++) {
       for (int az=array_lower[2]; az<array_upper[2]; az++) {
@@ -814,11 +817,10 @@ void EnzoInitialHdf5::my_enforce_block
       }
     }
   }
-  enforce_block1(block, hierarchy_unused);
   block->initial_done();
 }
 
-void EnzoBlock::read_data(int & count_messages,
+void EnzoBlock::load_data(int & count_messages,
                           int index, 
                           vecstr_type files,
                           vecstr_type datasets,
