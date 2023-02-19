@@ -666,6 +666,9 @@ public: // attributes
   // TODO: check if these need to be pup-ed
   std::vector < int > initial_hdf5_field_levels;
   std::vector < int > initial_hdf5_particle_levels;
+
+  int** refined_regions_lower;
+  int** refined_regions_upper;
   //############################################################
 
   /// EnzoInitialInclinedWave

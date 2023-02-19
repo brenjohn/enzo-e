@@ -473,8 +473,11 @@ public: // attributes
   int                        mesh_max_initial_level;
   //########################################################
   // TODO: check if these need to be puped
-  int                        level_1_lower[3];
-  int                        level_1_upper[3];
+  std::vector< int* > refined_regions_lower;
+  std::vector< int* > refined_regions_upper;
+
+  // int                        level_1_lower[3];
+  // int                        level_1_upper[3];
   //########################################################
 
   // Method

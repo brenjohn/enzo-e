@@ -183,7 +183,7 @@ public: // interface
                           int nx, int ny, int nz,
                           int ax, int ay, int az);
 
-  //Index index_from_global(int ix, int iy, int iz, int level, int min_level)
+  Index index_from_global(int ix, int iy, int iz, int level, int min_level);
 
   void p_say_hello();
   virtual void create_child_blocks();

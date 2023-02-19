@@ -8,6 +8,106 @@
 #ifndef ENZO_ENZO_INITIAL_HDF5_HPP
 #define ENZO_ENZO_INITIAL_HDF5_HPP
 
+//##################################################################
+class DataLoader{
+  public:
+    DataLoader(Block* block, std::string format);
+
+    ~DataLoader(){delete file;}
+
+    virtual void open_file(std::string filename, std::string dataset, std::string coordinates);
+
+    void close_file() {
+      file->data_close();
+      file->file_close();
+    }
+
+    void load(Block* block, int* block_index, Index index_block);
+    void delete_array_(char ** array, int type_data);
+    char * allocate_array_ (int n, int type_data);
+    virtual void copy_data_local(Block* block, char * data) {}
+    virtual void copy_data_remote(Index index_block, char * data) {}
+    void read_dataset_(char ** data, Index index_block, int block_index[3]);
+    void check_cosmology_(File * file) const;
+
+    // Attributes
+    Block * block;
+    FileHdf5 * file;
+
+    int type_data;
+    double lower_block[3];
+    double upper_block[3];
+    int mx, my, mz;
+    int nx, ny, nz;
+    int n4[4], IX, IY, IZ;
+    double h4[4];
+    int m4[4];
+
+    std::string coords;
+    std::string format_;
+};
+
+class FieldLoader : public DataLoader {
+  public:
+    FieldLoader(Block* block, std::string format) : DataLoader(block, format)
+    {
+      Field field = block->data()->field();
+      field.ghost_depth(0,&gx,&gy,&gz);
+    }
+
+    void open_file(std::string filename, 
+                  std::string field_name,
+                  std::string field_coords,
+                  std::string field_dataset)
+    {
+      DataLoader::open_file(filename, field_dataset, field_coords);
+      name = field_name;
+    }
+
+    virtual void copy_data_local(Block* block, char * data);
+    virtual void copy_data_remote(Index index_block, char * data);
+    void copy_dataset_to_field_(Block * block, char * data);
+
+    template <class T>
+    void copy_field_data_to_array_(enzo_float * array, T * data) const;
+
+    // Attributes
+    int gx, gy, gz;
+    std::string name;
+};
+
+class ParticleLoader : public DataLoader {
+  public:
+    ParticleLoader(Block* block, bool particle_displacements, std::string format) : DataLoader(block, format) {
+      l_particle_displacements_ = particle_displacements;
+    }
+
+    void open_file(std::string filename,
+                  std::string particle_type,
+                  std::string particle_attributes,
+                  std::string particle_coords,
+                  std::string particle_dataset)
+    {
+      DataLoader::open_file(filename, particle_dataset, particle_coords);
+      type = particle_type;
+      attributes = particle_attributes;
+    }
+
+    virtual void copy_data_local(Block* block, char * data);
+    virtual void copy_data_remote(Index index_block, char * data);
+    void copy_dataset_to_particle_(Block * block, char * data);
+    template <class T, class S>
+    void copy_particle_data_to_array_(T * array, S * data, Particle particle, int it, int ia, int np);
+    template <class T>
+    void update_particle_displacements_(T * array, Particle particle, int it, int ia, double lower, double h, int axis);
+
+    // Attributes
+    std::string type;
+    std::string attributes;
+    bool l_particle_displacements_;
+};
+//##################################################################
+
 class EnzoInitialHdf5 : public Initial {
 
   /// @class    EnzoInitialHdf5
@@ -65,7 +165,11 @@ public: // interface
 
   //########################################################
   // virtual void enforce_subgrid_block(Block * block) throw();
-  void enforce_block1( Block * block, const Hierarchy * hierarchy_unused ) throw();
+  // void enforce_block1( Block * block, const Hierarchy * hierarchy_unused ) throw();
+
+  void my_enforce_block( Block * block ) throw();
+  void get_reader_range(Index reader_index, int* lower, int* upper, int level) throw();
+  void load_data(int & count_messages, Block * block, int level, int min_level, DataLoader & loader);
   //########################################################
 
   void recv_data (Block * block, MsgInitial * msg_initial);
@@ -95,7 +199,7 @@ protected: // functions
   {
     ScalarData<Sync> * scalar_data = block->data()->scalar_data_sync();
     ScalarDescr *      scalar_descr = cello::scalar_descr_sync();
-    return scalar_data->value(scalar_descr,i_sync_msg_);
+    return scalar_data->value(scalar_descr, i_sync_msg_);
   }
 
   char * allocate_array_ (int n, int type_data)

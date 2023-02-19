@@ -513,7 +513,6 @@ void EnzoBlock::instantiate_children(){
   ny = ny << 1;
   nz = nz << 1;
 
-  // int nx = 128, ny = 128, nz = 128;
   int num_field_blocks = 1;
 
   // int level = 1;
@@ -595,22 +594,27 @@ void EnzoBlock::create_child_blocks(){
 }
 
 bool EnzoBlock::spawn_child_blocks(){
-  if (index_.level() == 0) {
-    // EnzoConfig* config = enzo::simulation()->config();
-    const int* lower_block = enzo::simulation()->config()->level_1_lower;
-    const int* upper_block = enzo::simulation()->config()->level_1_upper;
+  int level = index_.level();
+  if (level >= 0) {
+    
+    if (level + 1 <= enzo::simulation()->config()->refined_regions_lower.size()) {
 
-    int ix, iy, iz, nx, ny, nz;
-    index_global(&ix, &iy, &iz, &nx, &ny, &nz);
+      int* lower = enzo::simulation()->config()->refined_regions_lower.at(level);
+      int* upper = enzo::simulation()->config()->refined_regions_upper.at(level);
 
-    if (lower_block[0] <= ix && ix < upper_block[0]) {
-      if (lower_block[1] <= iy && iy < upper_block[1]) {
-        if (lower_block[2] <= iz && iz < upper_block[2]) {
-          return true;
+      int ix, iy, iz, nx, ny, nz;
+      index_global(&ix, &iy, &iz, &nx, &ny, &nz);
+
+      if (lower[0] <= ix && ix < upper[0]) {
+        if (lower[1] <= iy && iy < upper[1]) {
+          if (lower[2] <= iz && iz < upper[2]) {
+            return true;
+          }
         }
       }
     }
   }
+
   return false;
 }
 

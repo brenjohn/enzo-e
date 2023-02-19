@@ -327,7 +327,7 @@ void EnzoInitialHdf5::enforce_block
       }
     }
   }
-  enforce_block1(block, hierarchy_unused);
+  // enforce_block1(block, hierarchy_unused);
   block->initial_done();
 }
 
@@ -495,255 +495,253 @@ void EnzoInitialHdf5::enforce_block
 //   std::cout << block->name() << "-------: : calling initial done" << std::endl;
 //   block->initial_done();
 // }
-void EnzoInitialHdf5::enforce_block1
-( Block * block, const Hierarchy * hierarchy_unused ) throw()
-{ 
-  // Assert: to reach this point, block must be a reading block
+// void EnzoInitialHdf5::enforce_block1
+// ( Block * block, const Hierarchy * hierarchy_unused ) throw()
+// { 
+//   // Assert: to reach this point, block must be a reading block
 
-  int array_lower[3],array_upper[3];
-  root_block_range_(block->index(),array_lower,array_upper);
+//   int array_lower[3],array_upper[3];
+//   root_block_range_(block->index(),array_lower,array_upper);
 
-  if (array_lower[0] != 0 && array_lower[1] != 0 && array_lower[2] != 0){ return;}
+//   if (array_lower[0] != 0 && array_lower[1] != 0 && array_lower[2] != 0){ return;}
 
-  Field field = block->data()->field();
+//   Field field = block->data()->field();
 
-  int mx,my,mz;
-  int nx,ny,nz;
-  int gx,gy,gz;
-  int n4[4],IX,IY,IZ;
-  double h4[4];
+//   int mx,my,mz;
+//   int nx,ny,nz;
+//   int gx,gy,gz;
+//   int n4[4],IX,IY,IZ;
+//   double h4[4];
 
-  field.dimensions (0,&mx,&my,&mz);
-  field.size         (&nx,&ny,&nz);
-  field.ghost_depth(0,&gx,&gy,&gz);
+//   field.dimensions (0,&mx,&my,&mz);
+//   field.size         (&nx,&ny,&nz);
+//   field.ghost_depth(0,&gx,&gy,&gz);
 
-  // double lower_block[3], upper_block[3];
-  // block->lower(lower_block,lower_block+1,lower_block+2);
-  // block->upper(upper_block,upper_block+1,upper_block+2);
-  double lower_block[3] = {0.25, 0.25, 0.25};
-  double upper_block[3] = {0.5, 0.5, 0.5};
-  static std::map<std::string,int> close_count;
+//   // double lower_block[3], upper_block[3];
+//   // block->lower(lower_block,lower_block+1,lower_block+2);
+//   // block->upper(upper_block,upper_block+1,upper_block+2);
+//   double lower_block[3] = {0.25, 0.25, 0.25};
+//   double upper_block[3] = {0.5, 0.5, 0.5};
+//   static std::map<std::string,int> close_count;
 
-  // Maintain running count of messages sent
-  int count_messages = 0;
+//   // Maintain running count of messages sent
+//   int count_messages = 0;
 
-  std::cout << "Reading in field data" << std::endl;
-  // Read in Field files
-  for (size_t index=0; index<field_files_.size(); index++) {
+//   std::cout << "Reading in field data" << std::endl;
+//   // Read in Field files
+//   for (size_t index=0; index<field_files_.size(); index++) {
 
-    //#######################################
-    if (field_levels_.at(index) < 1) continue;
-    //#######################################
+//     //#######################################
+//     if (field_levels_.at(index) < 1) continue;
+//     //#######################################
 
-    // Open the file
+//     // Open the file
 
-    FileHdf5 * file = new FileHdf5 ("./",field_files_[index]);
-    file->file_open();
+//     FileHdf5 * file = new FileHdf5 ("./",field_files_[index]);
+//     file->file_open();
 
-    // Double-check cosmology parameters if CHECK_COSMO_PARAMS is true
-    if (CHECK_COSMO_PARAMS) {
-      check_cosmology_(file);
-    }
+//     // Double-check cosmology parameters if CHECK_COSMO_PARAMS is true
+//     if (CHECK_COSMO_PARAMS) {
+//       check_cosmology_(file);
+//     }
 
-    // Open the dataset
+//     // Open the dataset
 
-    int m4[4] = {0,0,0,0};
-    int type_data = type_unknown;
-    file-> data_open (field_datasets_[index], &type_data,
-                      m4,m4+1,m4+2,m4+3);
+//     int m4[4] = {0,0,0,0};
+//     int type_data = type_unknown;
+//     file-> data_open (field_datasets_[index], &type_data,
+//                       m4,m4+1,m4+2,m4+3);
 
-    ASSERT1("EnzoInitialHdf5::enforce_block()",
-           "Unsupported type_data %d",
-            type_data,
-            ( (type_data == type_single) ||
-              (type_data == type_double) ) );
+//     ASSERT1("EnzoInitialHdf5::enforce_block()",
+//            "Unsupported type_data %d",
+//             type_data,
+//             ( (type_data == type_single) ||
+//               (type_data == type_double) ) );
 
-    // Count number of messages to send per block
-    ++count_messages;
+//     // Count number of messages to send per block
+//     ++count_messages;
 
-    // TODO: have these set by 'root_range_block' which should take the values
-    // from the parameter file. possibly rename roo_range_block and get it to
-    // take level as argument.
-    int array_lower[3] = {2, 2, 2}, array_upper[3] = {4, 4, 4};
-    int nbx = 8, nby = 8, nbz = 8; // size of array at specified level
-    int rx = 4, ry = 4, rz = 4;    // root size
+//     // TODO: have these set by 'root_range_block' which should take the values
+//     // from the parameter file. possibly rename roo_range_block and get it to
+//     // take level as argument.
+//     int array_lower[3] = {2, 2, 2}, array_upper[3] = {4, 4, 4};
+//     int nbx = 8, nby = 8, nbz = 8; // size of array at specified level
+//     int rx = 4, ry = 4, rz = 4;    // root size
 
-    //=======================================================================
-    // field_levels_ -> levels_
-    // for (int i=0; i < 3; i++) -> for (int i=0; i < cello::rank(); i++)
+//     //=======================================================================
+//     // field_levels_ -> levels_
+//     // for (int i=0; i < 3; i++) -> for (int i=0; i < cello::rank(); i++)
 
-    // int level = field_levels_.at(index);
-    // int lower[3], upper[3];
-    // int refined_region_lower = cello::hierarchy()->refined_region_lower(level);
-    // int refined_region_upper = cello::hierarchy()->refined_region_upper(level);
-    // for (int i=0; i < 3; i++) lower[i] = std::max(array_lower[i] << level, refined_region_lower);
-    // for (int i=0; i < 3; i++) upper[i] = std::min(array_upper[i] << level, refined_region_upper);
-    //=======================================================================
+//     // int level = field_levels_.at(index);
+//     // int lower[3], upper[3];
+//     // int refined_region_lower = cello::hierarchy()->refined_region_lower(level);
+//     // int refined_region_upper = cello::hierarchy()->refined_region_upper(level);
+//     // for (int i=0; i < 3; i++) lower[i] = std::max(array_lower[i] << level, refined_region_lower);
+//     // for (int i=0; i < 3; i++) upper[i] = std::min(array_upper[i] << level, refined_region_upper);
+//     //=======================================================================
 
-    // Loop over root-level blocks in range of this reader
-    for (int ax=array_lower[0]; ax<array_upper[0]; ax++) {
-      for (int ay=array_lower[1]; ay<array_upper[1]; ay++) {
-        for (int az=array_lower[2]; az<array_upper[2]; az++) {
-          int block_index[3] = {ax-2,ay-2,az-2};
-          Index index_block = block->index_from_global(ax, ay, az, nbx, nby, nbz, rx, ry, rz);
+//     // Loop over root-level blocks in range of this reader
+//     for (int ax=array_lower[0]; ax<array_upper[0]; ax++) {
+//       for (int ay=array_lower[1]; ay<array_upper[1]; ay++) {
+//         for (int az=array_lower[2]; az<array_upper[2]; az++) {
+//           int block_index[3] = {ax-2,ay-2,az-2};
+//           Index index_block = block->index_from_global(ax, ay, az, nbx, nby, nbz, rx, ry, rz);
 
-          char * data;
-          read_dataset_
-            (file, &data,index_block, type_data,
-             lower_block,upper_block,block_index,
-             field_coords_[index],
-             16,16,16,m4,n4,h4,&IX,&IY,&IZ);
+//           char * data;
+//           read_dataset_
+//             (file, &data,index_block, type_data,
+//              lower_block,upper_block,block_index,
+//              field_coords_[index],
+//              16,16,16,m4,n4,h4,&IX,&IY,&IZ);
 
-          if (index_block == block->index() ) {
+//           if (index_block == block->index() ) {
 
-            // local block: copy directly to field
-            copy_dataset_to_field_
-              (block, 
-               field_names_[index],
-               type_data,
-               data,
-               mx,my,mz,
-               nx,ny,nz,
-               gx,gy,gz,
-               n4,IX,IY);
+//             // local block: copy directly to field
+//             copy_dataset_to_field_
+//               (block, 
+//                field_names_[index],
+//                type_data,
+//                data,
+//                mx,my,mz,
+//                nx,ny,nz,
+//                gx,gy,gz,
+//                n4,IX,IY);
 
-          } else {
+//           } else {
 
-            // remote block: pack message and send
-            MsgInitial * msg_initial = new MsgInitial;
-            msg_initial->set_dataset (n4,h4,nx,ny,nz,IX,IY,IZ);
-            msg_initial->set_field_data
-              (field_names_[index],data,nx*ny*nz,type_data);
-            enzo::block_array()[index_block].p_initial_hdf5_recv(msg_initial);
-          }
+//             // remote block: pack message and send
+//             MsgInitial * msg_initial = new MsgInitial;
+//             msg_initial->set_dataset (n4,h4,nx,ny,nz,IX,IY,IZ);
+//             msg_initial->set_field_data
+//               (field_names_[index],data,nx*ny*nz,type_data);
+//             enzo::block_array()[index_block].p_initial_hdf5_recv(msg_initial);
+//           }
 
-          delete_array_ (&data,type_data);
+//           delete_array_ (&data,type_data);
 
-        }
-      }
-    }
-    file->data_close();
-    file->file_close();
-    delete file;
-  }
+//         }
+//       }
+//     }
+//     file->data_close();
+//     file->file_close();
+//     delete file;
+//   }
 
-  // Read in particle files
-  std::cout << "Reading in particle data" << std::endl;
-  for (size_t index=0; index<particle_files_.size(); index++) {
+//   // Read in particle files
+//   std::cout << "Reading in particle data" << std::endl;
+//   for (size_t index=0; index<particle_files_.size(); index++) {
 
-    //###########################################
-    if (particle_levels_.at(index) < 1) continue;
-    //###########################################
+//     //###########################################
+//     if (particle_levels_.at(index) < 1) continue;
+//     //###########################################
 
-    FileHdf5 * file = new FileHdf5 ("./",particle_files_[index]);
-    file->file_open();
+//     FileHdf5 * file = new FileHdf5 ("./",particle_files_[index]);
+//     file->file_open();
 
-    // Double-check cosmology parameters if CHECK_COSMO_PARAMS is true
-    if (CHECK_COSMO_PARAMS) {
-      check_cosmology_(file);
-    }
+//     // Double-check cosmology parameters if CHECK_COSMO_PARAMS is true
+//     if (CHECK_COSMO_PARAMS) {
+//       check_cosmology_(file);
+//     }
 
-    // Open the dataset
+//     // Open the dataset
 
-    int m4[4] = {0,0,0,0};
-    int type_data = type_unknown;
-    file-> data_open (particle_datasets_[index], &type_data,
-                      m4,m4+1,m4+2,m4+3);
+//     int m4[4] = {0,0,0,0};
+//     int type_data = type_unknown;
+//     file-> data_open (particle_datasets_[index], &type_data,
+//                       m4,m4+1,m4+2,m4+3);
 
-    ASSERT1("EnzoInitialHdf5::enforce_block()",
-           "Unsupported type_data %d",
-            type_data,
-            ( (type_data == type_single) ||
-              (type_data == type_double) ) );
+//     ASSERT1("EnzoInitialHdf5::enforce_block()",
+//            "Unsupported type_data %d",
+//             type_data,
+//             ( (type_data == type_single) ||
+//               (type_data == type_double) ) );
 
-    // Count number of messages to send per block
-    ++count_messages;
+//     // Count number of messages to send per block
+//     ++count_messages;
 
-    // TODO: have these set by 'root_range_block' which should take the values
-    // from the parameter file. possibly rename roo_range_block and get it to
-    // take level as argument.
-    int array_lower[3] = {2, 2, 2}, array_upper[3] = {4, 4, 4};
-    int nbx = 8, nby = 8, nbz = 8; // size of array at specified level
-    int rx = 4, ry = 4, rz = 4;    // root size
+//     // TODO: have these set by 'root_range_block' which should take the values
+//     // from the parameter file. possibly rename roo_range_block and get it to
+//     // take level as argument.
+//     int array_lower[3] = {2, 2, 2}, array_upper[3] = {4, 4, 4};
+//     int nbx = 8, nby = 8, nbz = 8; // size of array at specified level
+//     int rx = 4, ry = 4, rz = 4;    // root size
 
-    // Loop over root-level blocks in range of this reader
-    for (int ax=array_lower[0]; ax<array_upper[0]; ax++) {
-      for (int ay=array_lower[1]; ay<array_upper[1]; ay++) {
-        for (int az=array_lower[2]; az<array_upper[2]; az++) {
-          int block_index[3] = {ax-2,ay-2,az-2};
-          Index index_block = block->index_from_global(ax, ay, az, nbx, nby, nbz, rx, ry, rz);
+//     // Loop over root-level blocks in range of this reader
+//     for (int ax=array_lower[0]; ax<array_upper[0]; ax++) {
+//       for (int ay=array_lower[1]; ay<array_upper[1]; ay++) {
+//         for (int az=array_lower[2]; az<array_upper[2]; az++) {
+//           int block_index[3] = {ax-2,ay-2,az-2};
+//           Index index_block = block->index_from_global(ax, ay, az, nbx, nby, nbz, rx, ry, rz);
 
-          char * data;
-          read_dataset_
-            (file, &data,index_block, type_data,
-             lower_block,upper_block,block_index,
-             particle_coords_[index],
-             16,16,16,m4,n4,h4,&IX,&IY,&IZ);
+//           char * data;
+//           read_dataset_
+//             (file, &data,index_block, type_data,
+//              lower_block,upper_block,block_index,
+//              particle_coords_[index],
+//              16,16,16,m4,n4,h4,&IX,&IY,&IZ);
 
-          if (index_block == block->index() ) {
+//           if (index_block == block->index() ) {
 
-            // local block: copy directly to particle
-            copy_dataset_to_particle_
-              (block,
-               particle_types_[index],
-               particle_attributes_[index],
-               type_data,
-               data,
-               nx,ny,nz,
-               h4,IX,IY,IZ);
+//             // local block: copy directly to particle
+//             copy_dataset_to_particle_
+//               (block,
+//                particle_types_[index],
+//                particle_attributes_[index],
+//                type_data,
+//                data,
+//                nx,ny,nz,
+//                h4,IX,IY,IZ);
 
-          } else {
+//           } else {
 
-            // remote block: pack message and send
-            MsgInitial * msg_initial = new MsgInitial;
-            msg_initial->set_dataset (n4,h4,nx,ny,nz,IX,IY,IZ);
-            msg_initial->set_particle_data
-              (particle_types_[index],
-               particle_attributes_[index],
-               data,nx*ny*nz,type_data);
+//             // remote block: pack message and send
+//             MsgInitial * msg_initial = new MsgInitial;
+//             msg_initial->set_dataset (n4,h4,nx,ny,nz,IX,IY,IZ);
+//             msg_initial->set_particle_data
+//               (particle_types_[index],
+//                particle_attributes_[index],
+//                data,nx*ny*nz,type_data);
 
-            enzo::block_array()[index_block].p_initial_hdf5_recv(msg_initial);
+//             enzo::block_array()[index_block].p_initial_hdf5_recv(msg_initial);
 
-          }
-          delete_array_ (&data,type_data);
-        }
-      }
-    }
-    file->data_close();
-    file->file_close();
-    delete file;
-  }
+//           }
+//           delete_array_ (&data,type_data);
+//         }
+//       }
+//     }
+//     file->data_close();
+//     file->file_close();
+//     delete file;
+//   }
 
-  // TODO: have these set by 'root_range_block' which should take the values
-  // from the parameter file. possibly rename roo_range_block and get it to
-  // take level as argument.
-  int array_lowerf[3] = {2, 2, 2}, array_upperf[3] = {4, 4, 4};
-  int nbx = 8, nby = 8, nbz = 8; // size of array at specified level
-  int rx = 4, ry = 4, rz = 4;    // root size
+//   // TODO: have these set by 'root_range_block' which should take the values
+//   // from the parameter file. possibly rename roo_range_block and get it to
+//   // take level as argument.
+//   int array_lowerf[3] = {2, 2, 2}, array_upperf[3] = {4, 4, 4};
+//   int nbx = 8, nby = 8, nbz = 8; // size of array at specified level
+//   int rx = 4, ry = 4, rz = 4;    // root size
 
-  // Loop over root-level blocks in range of this reader
-  for (int ax=array_lowerf[0]; ax<array_upperf[0]; ax++) {
-    for (int ay=array_lowerf[1]; ay<array_upperf[1]; ay++) {
-      for (int az=array_lowerf[2]; az<array_upperf[2]; az++) {
-        int block_index[3] = {ax,ay,az};
-        Index index_block = block->index_from_global(ax, ay, az, nbx, nby, nbz, rx, ry, rz);
-        if (index_block != block->index() ) {
-          MsgInitial * msg_initial = new MsgInitial;
-          msg_initial->set_count(count_messages + 1);
-          // send empty message with count of number of messages sent
-          // (including this one)
-          enzo::block_array()[index_block].p_initial_hdf5_recv(msg_initial);
-        }
-      }
-    }
-  }
-}
+//   // Loop over root-level blocks in range of this reader
+//   for (int ax=array_lowerf[0]; ax<array_upperf[0]; ax++) {
+//     for (int ay=array_lowerf[1]; ay<array_upperf[1]; ay++) {
+//       for (int az=array_lowerf[2]; az<array_upperf[2]; az++) {
+//         int block_index[3] = {ax,ay,az};
+//         Index index_block = block->index_from_global(ax, ay, az, nbx, nby, nbz, rx, ry, rz);
+//         if (index_block != block->index() ) {
+//           MsgInitial * msg_initial = new MsgInitial;
+//           msg_initial->set_count(count_messages + 1);
+//           // send empty message with count of number of messages sent
+//           // (including this one)
+//           enzo::block_array()[index_block].p_initial_hdf5_recv(msg_initial);
+//         }
+//       }
+//     }
+//   }
+// }
 
-void EnzoInitialHdf5::my_enforce_block
-( Block * block, const Hierarchy * hierarchy_unused ) throw()
+void EnzoInitialHdf5::my_enforce_block( Block * block ) throw()
 {
-  // if (! (0 <= block->level() && block->level() <= max_level_) ) {
-  if (! (0 <= block->level() && block->level() <= 0) ) {
+  if (! (0 <= block->level() && block->level() <= max_level_) ) {
     // if level not in range, then return and call initial_done()
     block->initial_done();
     return;
@@ -757,132 +755,104 @@ void EnzoInitialHdf5::my_enforce_block
  
   // Assert: to reach this point, block must be a reading block
 
-  int array_lower[3],array_upper[3];
-  root_block_range_(block->index(),array_lower,array_upper);
-
-  Field field = block->data()->field();
-
-  int mx,my,mz;
-  int nx,ny,nz;
-  int gx,gy,gz;
-  int n4[4],IX,IY,IZ;
-  double h4[4];
-
-  field.dimensions (0,&mx,&my,&mz);
-  field.size         (&nx,&ny,&nz);
-  field.ghost_depth(0,&gx,&gy,&gz);
-
-  double lower_block[3], upper_block[3];
-  block->lower(lower_block,lower_block+1,lower_block+2);
-  block->upper(upper_block,upper_block+1,upper_block+2);
-  static std::map<std::string,int> close_count;
+  FieldLoader* field_loader = new FieldLoader(block, format_);
+  ParticleLoader* particle_loader = new ParticleLoader(block, l_particle_displacements_, format_);
+  int min_level = cello::hierarchy()->min_level();
 
   // Maintain running count of messages sent
-  int count_messages = 0;
+  int count_messages[max_level_ + 1] = {};
 
   // Read in Field files
   for (size_t index=0; index<field_files_.size(); index++) {
-    load_data(count_messages,
-              index, 
-              field_files_,
-              field_datasets_,
-              field_coords_,
-              ...,
-              field_loader)
+    int level = field_levels_[index];
+    if (level > max_level_) {continue;}
+    field_loader->open_file(field_files_[index],
+                            field_names_[index],
+                            field_coords_[index],
+                            field_datasets_[index]);
+    load_data(count_messages[level],
+              block,
+              level,
+              min_level,
+              *field_loader);
   }
 
   // Read in particle files
   for (size_t index=0; index<particle_files_.size(); index++) {
-    load_data(count_messages,
-              index, 
-              particle_files_,
-              particle_datasets_,
-              particle_coords_,
-              ...,
-              particle_loader)
+    int level = particle_levels_[index];
+    if (level > max_level_) {continue;}
+    particle_loader->open_file(particle_files_[index],
+                               particle_types_[index],
+                               particle_attributes_[index],
+                               particle_coords_[index],
+                               particle_datasets_[index]);
+    load_data(count_messages[level],
+              block,
+              level,
+              min_level,
+              *particle_loader);
   }
 
-  // TODO: need to iterate over child blocks here also.
-  for (int ax=array_lower[0]; ax<array_upper[0]; ax++) {
-    for (int ay=array_lower[1]; ay<array_upper[1]; ay++) {
-      for (int az=array_lower[2]; az<array_upper[2]; az++) {
-        Index index_block(ax,ay,az);
-        if (index_block != block->index() ) {
-          MsgInitial * msg_initial = new MsgInitial;
-          msg_initial->set_count(count_messages + 1);
-          // send empty message with count of number of messages sent
-          // (including this one)
-          enzo::block_array()[index_block].p_initial_hdf5_recv(msg_initial);
+  int lower[3], upper[3];
+  for (int level = 0; level < max_level_; level++){
+    get_reader_range(block->index(), lower, upper, level);
+    for (int ax = lower[0]; ax < upper[0]; ax++) {
+      for (int ay = lower[1]; ay < upper[1]; ay++) {
+        for (int az = lower[2]; az < upper[2]; az++) {
+
+          Index index_block = block->index_from_global(ax, ay, az, level, min_level);
+          if (index_block != block->index() ) {
+            MsgInitial * msg_initial = new MsgInitial;
+            msg_initial->set_count(count_messages[level] + 1);
+            enzo::block_array()[index_block].p_initial_hdf5_recv(msg_initial);
+          }
         }
       }
     }
   }
+  
   block->initial_done();
 }
 
-void EnzoBlock::load_data(int & count_messages,
-                          int index, 
-                          vecstr_type files,
-                          vecstr_type datasets,
-                          vecstr_type coords,
-                          std::vector < int > levels,
-                          int* root_range_lower,
-                          int* root_range_upper,
-                          int blocking_factor,
-                          DataLoader loader){
-  // Open the file
-  FileHdf5 * file = new FileHdf5 ("./", files[index]);
-  file->file_open();
-
-  // Double-check cosmology parameters if CHECK_COSMO_PARAMS is true
-  if (CHECK_COSMO_PARAMS) {
-    check_cosmology_(file);
-  }
-
-  // Open the dataset
-  int m4[4] = {0,0,0,0};
-  int type_data = type_unknown;
-  file-> data_open (datasets[index], &type_data,
-                    m4,m4+1,m4+2,m4+3);
-
-  ASSERT1("EnzoInitialHdf5::enforce_block()",
-          "Unsupported type_data %d",
-          type_data,
-          ( (type_data == type_single) ||
-            (type_data == type_double) ) );
-
+void EnzoInitialHdf5::load_data(int & count_messages,
+                                Block * block,
+                                int level, int min_level,
+                                DataLoader & loader){
+  
   // Count number of messages to send per block
   ++count_messages;
 
-  int level = levels.at(index);
-  int refined_region_lower = cello::hierarchy()->refined_region_lower(level);
-  int refined_region_upper = cello::hierarchy()->refined_region_upper(level);
-
-  int rx, ry, rz;
-  cello::hierarchy()->root_size(rx, ry, rz);
-  // TODO use implmentation of index_from_global which takes level as argument.
-  int nbx = rx << level, nby = ry << level, nbz = rz << level
-
   int lower[3], upper[3];
-  for (int i=0; i < 3; i++)
-    lower[i] = std::max(root_range_lower[i] << level, refined_region_lower[i]);
-  for (int i=0; i < 3; i++)
-    upper[i] = std::min(root_range_upper[i] << level, refined_region_upper[i]);
+  get_reader_range(block->index(), lower, upper, level);
+  int region_lower[3];
+  cello::hierarchy()->refined_region_lower(region_lower, level);
 
   // Loop over blocks in range of this reader at the given level.
   for (int ax = lower[0]; ax < upper[0]; ax++) {
     for (int ay = lower[1]; ay < upper[1]; ay++) {
       for (int az = lower[2]; az < upper[2]; az++) {
         int block_index[3] = {ax, ay, az};
-        for (int i = 0; i < 3; i++) block_index[i] -= refined_region_lower[i];
-        Index index_block = block->index_from_global(ax, ay, az, nbx, nby, nbz, rx, ry, rz);
-        loader(block_index, index_block, m4);
+        for (int i = 0; i < 3; i++) block_index[i] -= region_lower[i];
+        Index index_block = block->index_from_global(ax, ay, az, level, min_level);
+        loader.load(block, block_index, index_block);
       }
     }
   }
-  file->data_close();
-  file->file_close();
-  delete file;
+  loader.close_file();
+}
+
+void EnzoInitialHdf5::get_reader_range(Index reader_index, int* lower, int* upper, int level) throw() {
+  int region_lower[3], region_upper[3];
+  cello::hierarchy()->refined_region_lower(region_lower, level);
+  cello::hierarchy()->refined_region_upper(region_upper, level);
+
+  int root_range_lower[3], root_range_upper[3];
+  root_block_range_(reader_index, root_range_lower, root_range_upper);
+
+  for (int i=0; i < 3; i++)
+    lower[i] = std::max(root_range_lower[i] << level, region_lower[i]);
+  for (int i=0; i < 3; i++)
+    upper[i] = std::min(root_range_upper[i] << level, region_upper[i]);
 }
 //#################################################
 //----------------------------------------------------------------------
@@ -1341,3 +1311,324 @@ void EnzoInitialHdf5::check_cosmology_(File * file) const
     }
   }
 }
+
+
+//##################################################################
+DataLoader::DataLoader(Block* block, std::string format) : block(block), m4()
+{
+  Field field = block->data()->field();
+  field.dimensions (0,&mx,&my,&mz);
+  field.size         (&nx,&ny,&nz);
+
+  block->lower(lower_block, lower_block+1, lower_block+2);
+  block->upper(upper_block, upper_block+1, upper_block+2);
+  format_ = format;
+}
+
+void DataLoader::open_file(std::string filename, std::string dataset, std::string coordinates) {
+  file = new FileHdf5 ("./", filename);
+
+  if (CHECK_COSMO_PARAMS)
+    check_cosmology_(file);
+
+  // m4 = {0,0,0,0};
+  type_data = type_unknown;
+  file->data_open(dataset, &type_data, m4, m4+1, m4+2, m4+3);
+
+  ASSERT1("EnzoInitialHdf5::enforce_block()",
+          "Unsupported type_data %d",
+          type_data,
+          ( (type_data == type_single) ||
+            (type_data == type_double) ) );
+
+  coords = coordinates;
+}
+
+void DataLoader::load(Block* block, int* block_index, Index index_block) {
+  char * data;
+  read_dataset_(&data, index_block, block_index);
+
+  (index_block == block->index()) ? copy_data_local(block, data) : copy_data_remote(index_block, data);
+  delete_array_(&data, type_data);
+}
+
+void DataLoader::read_dataset_(char ** data, Index index_block, int block_index[3])
+{
+  // Read the domain dimensions
+  IX = coords.find ("x");
+  IY = coords.find ("y");
+  IZ = coords.find ("z");
+
+  ASSERT3 ("EnzoInitialHdf5::enforce_block()",
+           "bad field coordinates %d %d %d",
+           IX,IY,IZ,
+           ((IX<4)&&(IY<4)&&(IZ<4)) &&
+           ((IX != IY) || (IY==-1 && IZ == -1)) &&
+           ((IX != IY && IY != IZ) || (IZ == -1)));
+
+  // field size
+  n4[0] = n4[1] = n4[2] = n4[3] = 1;
+  n4[IX] = nx;
+  n4[IY] = ny;
+  n4[IZ] = nz;
+
+  // determine offsets
+  int o4[4] = {0,0,0,0};
+  o4[IX] = block_index[0]*nx;
+  o4[IY] = block_index[1]*ny;
+  o4[IZ] = block_index[2]*nz;
+
+  // open the dataspace
+  file-> data_slice
+    (m4[0],m4[1],m4[2],m4[3],
+     n4[0],n4[1],n4[2],n4[3],
+     o4[0],o4[1],o4[2],o4[3]);
+
+  // create memory space
+  // (fields was n4[(*IX)], n4[(*IY)], n4[(*IZ)])
+  file->mem_create (nx,ny,nz,nx,ny,nz,0,0,0);
+
+  // input domain size
+  const int n = nx*ny*nz;
+  (*data) = allocate_array_ (n, type_data);
+  file->data_read ((*data));
+}
+
+void DataLoader::delete_array_(char ** array, int type_data)
+{
+  if (type_data == type_single) {
+    delete [] (float*)(*array);
+  } else if (type_data == type_double) {
+    delete [] (double*)(*array);
+  } else {
+    ERROR1 ("DataLoader::delete_array_()",
+            "Unsupported data type %d",type_data);
+  }
+  (*array) = nullptr;
+}
+
+char * DataLoader::allocate_array_ (int n, int type_data)
+{
+  char * data;
+  if (type_data == type_single) {
+    data = (char *)new float [n];
+  } else if (type_data == type_double) {
+    data = (char *)new double [n];
+  } else {
+    data = nullptr;
+    ERROR1 ("DataLoader::allocate_array_()",
+            "Unsupported data type %d",type_data);
+  }
+  return data;
+}
+
+void DataLoader::check_cosmology_(File * file) const
+{
+  EnzoPhysicsCosmology * cosmo = enzo::cosmology();
+
+  if (cosmo != nullptr) {
+    if (format_ == "music") {
+
+      // Verify cosmology parameters in HDF5 file match those in Enzo-E
+      // parameter file to machine precision assumes "MUSIC" format with
+      // single-precision attributes To disable, set CHECK_COSMO_PARAMS
+      // define to "false" above
+
+      int type = type_unknown;
+      float dx,h0,omega_b,omega_m,omega_v,vfact;
+      file->file_read_scalar(&dx, "dx", &type);
+      file->file_read_scalar(&h0, "h0", &type);
+      file->file_read_scalar(&omega_b, "omega_b", &type);
+      file->file_read_scalar(&omega_m, "omega_m", &type);
+      file->file_read_scalar(&omega_v, "omega_v", &type);
+      file->file_read_scalar(&vfact, "vfact", &type);
+      double roundoff = cello::machine_epsilon(precision_single);
+      ASSERT2("EnzoInitialHdf5",
+              "Mismatch in cosmology H0: parameter file %g I.C.'s %g",
+              cosmo->hubble_constant_now(),h0,
+              cello::err_rel
+              (cosmo->hubble_constant_now(),enzo_float(h0)) < roundoff);
+      ASSERT2("EnzoInitialHdf5",
+              "Mismatch in cosmology omega_b: parameter file %g I.C.'s %g",
+              cosmo->omega_baryon_now(),omega_b,
+              cello::err_rel
+              (cosmo->omega_baryon_now(),enzo_float(omega_b)) < roundoff);
+      ASSERT2("EnzoInitialHdf5",
+              "Mismatch in cosmology omega_m: parameter file %g I.C.'s %g",
+              cosmo->omega_matter_now(),omega_m,
+              cello::err_rel
+              (cosmo->omega_matter_now(),enzo_float(omega_m)) < roundoff);
+      ASSERT2("EnzoInitialHdf5",
+              "Mismatch in cosmology omega_v: parameter file %g I.C.'s %g",
+              cosmo->omega_lambda_now(),omega_v,
+              cello::err_rel
+              (cosmo->omega_lambda_now(),enzo_float(omega_v)) < roundoff);
+    }
+  }
+}
+
+
+
+
+void FieldLoader::copy_data_local(Block* block, char * data) {
+  copy_dataset_to_field_(block, data);
+}
+
+void FieldLoader::copy_data_remote(Index index_block, char * data) {
+  MsgInitial * msg_initial = new MsgInitial;
+  msg_initial->set_dataset(n4,h4,nx,ny,nz,IX,IY,IZ);
+  msg_initial->set_field_data(name, data, nx*ny*nz, type_data);
+  enzo::block_array()[index_block].p_initial_hdf5_recv(msg_initial);
+}
+
+void FieldLoader::copy_dataset_to_field_(Block * block, char * data) {
+  Field field = block->data()->field();
+
+  // Destination is this block--copy directly
+  enzo_float * array = (enzo_float *) field.values(name);
+
+  if (type_data == type_single) {
+    copy_field_data_to_array_(array, (float *) data);
+  } else if (type_data == type_double) {
+    copy_field_data_to_array_(array, (double *) data);
+  }
+}
+
+template <class T>
+void FieldLoader::copy_field_data_to_array_(enzo_float * array, T * data) const {
+  for (int iz=0; iz<nz; iz++) {
+    int jz = iz+gz;
+    for (int iy=0; iy<ny; iy++) {
+      int jy = iy+gy;
+      for (int ix=0; ix<nx; ix++) {
+        int jx = ix+gx;
+        int i = ix+n4[IX]*(iy+n4[IY]*iz);
+        int j = jx+mx*(jy+my*jz);
+        array[j] = data[i];
+      }
+    }
+  }
+}
+
+
+
+
+void ParticleLoader::copy_data_local(Block* block, char * data) {
+  copy_dataset_to_particle_(block, data);
+}
+
+void ParticleLoader::copy_data_remote(Index index_block, char * data) {
+  MsgInitial * msg_initial = new MsgInitial;
+  msg_initial->set_dataset (n4,h4,nx,ny,nz,IX,IY,IZ);
+  msg_initial->set_particle_data(type, attributes,
+                                data, nx*ny*nz, type_data);
+  enzo::block_array()[index_block].p_initial_hdf5_recv(msg_initial);
+}
+
+void ParticleLoader::copy_dataset_to_particle_(Block * block, char * data) {
+  // Create particles and initialize them
+  Particle particle = block->data()->particle();
+
+  const int it = particle.type_index(type);
+  const int ia = particle.attribute_index(it,attributes);
+  const int np = nx*ny*nz;
+
+  // insert particles if they don't exist yet
+  // (assumes dataset covers entire block)
+  if (particle.num_particles(it) == 0) {
+    particle.insert_particles(it,np);
+    enzo::simulation()->data_insert_particles(np);
+  }
+
+  // read particle attribute
+  union {
+    void *   array;
+    float *  array_float;
+    double * array_double;
+  };
+
+  const int type_array = particle.attribute_type(it,ia);
+
+  if (type_array == type_single) {
+    if (type_data == type_single) {
+      copy_particle_data_to_array_
+        (array_float,(float *)data,particle,it,ia,np);
+    } else if (type_data == type_double) {
+      copy_particle_data_to_array_
+        (array_float,(double *)data,particle,it,ia,np);
+    }
+  } else if (type_array == type_double) {
+    if (type_data == type_single) {
+      copy_particle_data_to_array_
+        (array_double,(float *)data,particle,it,ia,np);
+    } else if (type_data == type_double) {
+      copy_particle_data_to_array_
+        (array_double,(double *)data,particle,it,ia,np);
+    }
+  } else {
+    ERROR3 ("EnzoInitialHdf5::enforce_block()",
+            "Unsupported particle precision %s for "
+            "particle type %s attribute %s",
+            cello::precision_name[type_array],
+            particle.type_name(it).c_str(),
+            particle.attribute_name(it,ia).c_str());
+  }
+
+  // update positions with displacements if needed
+  double lower_block[3];
+  block->lower(lower_block, lower_block+1, lower_block+2);
+
+  if (l_particle_displacements_) {
+    for (int axis=0; axis<3; axis++) {
+      // if attribute corresponds to position along the given axis,
+      // add to the attribute values the offsets of the cell centers
+      // along that axis
+      if (ia == particle.attribute_position(it,axis)) {
+        if (type_array == type_single) {
+          update_particle_displacements_
+            (array_float,particle,it,ia,lower_block[axis],h4[IX],axis);
+        } else {
+          update_particle_displacements_
+            (array_double,particle,it,ia,lower_block[axis],h4[IX],axis);
+        }
+      }
+    }
+  }
+}
+
+template <class T, class S>
+void ParticleLoader::copy_particle_data_to_array_
+(T * array, S * data, Particle particle, int it, int ia, int np)
+{
+  for (int ip=0; ip<np; ip++) {
+    int ib,io;
+    particle.index(ip,&ib,&io);
+    array = (T*)particle.attribute_array(it,ia,ib);
+    array[io] = data[ip];
+  }
+}
+
+template <class T>
+void ParticleLoader::update_particle_displacements_
+(T * array, Particle particle, int it, int ia, double lower, double h, int axis)
+{
+  // set (bx,by,bz) = e[axis] to avoid multiple loops and conditionals
+  // inside loops
+  const int bx = (axis == 0) ? 1 : 0;
+  const int by = (axis == 1) ? 1 : 0;
+  const int bz = (axis == 2) ? 1 : 0;
+
+  for (int iz=0; iz<nz; iz++) {
+    for (int iy=0; iy<ny; iy++) {
+      for (int ix=0; ix<nx; ix++) {
+        int ip = ix + nx*(iy + ny*iz);
+        int ib,io;
+        // get batch and offset into batch for the ip'th particle
+        particle.index(ip,&ib,&io);
+        array = ( T *) particle.attribute_array(it,ia,ib);
+        array[io] += lower + h*(bx*ix+by*iy+bz*iz + 0.5);
+      }
+    }
+  }
+}
+//##################################################################
