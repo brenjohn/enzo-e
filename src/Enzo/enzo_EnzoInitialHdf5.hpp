@@ -167,7 +167,7 @@ public: // interface
   // virtual void enforce_subgrid_block(Block * block) throw();
   // void enforce_block1( Block * block, const Hierarchy * hierarchy_unused ) throw();
 
-  void my_enforce_block( Block * block ) throw();
+  void enforce_block2( Block * block, const Hierarchy * hierarchy_unused) throw();
   void get_reader_range(Index reader_index, int* lower, int* upper, int level) throw();
   void load_data(int & count_messages, Block * block, int level, int min_level, DataLoader & loader);
   //########################################################

@@ -117,7 +117,7 @@ void  Block::initial_new_begin_(int level)
 void  Block::initial_new_next_()
 {
   //############################################################################
-  //std::cout << "Block " << name() << " entering initial_new_next" << std::endl;
+  // std::cout << "Block " << name() << " entering initial_new_next" << std::endl;
   //############################################################################
   TRACE_INITIAL("initial_new_next_()",this);
   Initial * initial = cello::problem()->initial(index_initial_);
@@ -141,7 +141,7 @@ void  Block::initial_new_next_()
 void  Block::initial_done()
 {
   //############################################################################
-  //std::cout << "Block " << name() << " entering initial_new_done" << std::endl;
+  // std::cout << "Block " << name() << " entering initial_new_done" << std::endl;
   //############################################################################
   if (cello::config()->initial_new) {
 

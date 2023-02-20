@@ -99,7 +99,7 @@ void EnzoInitialHdf5::pup (PUP::er &p)
 
 //----------------------------------------------------------------------
 
-void EnzoInitialHdf5::enforce_block
+void EnzoInitialHdf5::enforce_block2
 ( Block * block, const Hierarchy * hierarchy_unused ) throw()
 {
   //#######################################################################
@@ -739,7 +739,7 @@ void EnzoInitialHdf5::enforce_block
 //   }
 // }
 
-void EnzoInitialHdf5::my_enforce_block( Block * block ) throw()
+void EnzoInitialHdf5::enforce_block( Block * block, const Hierarchy * hierarchy_unused ) throw()
 {
   if (! (0 <= block->level() && block->level() <= max_level_) ) {
     // if level not in range, then return and call initial_done()
@@ -794,14 +794,14 @@ void EnzoInitialHdf5::my_enforce_block( Block * block ) throw()
   }
 
   int lower[3], upper[3];
-  for (int level = 0; level < max_level_; level++){
+  for (int level = 0; level <= max_level_; level++){
     get_reader_range(block->index(), lower, upper, level);
     for (int ax = lower[0]; ax < upper[0]; ax++) {
       for (int ay = lower[1]; ay < upper[1]; ay++) {
         for (int az = lower[2]; az < upper[2]; az++) {
 
           Index index_block = block->index_from_global(ax, ay, az, level, min_level);
-          if (index_block != block->index() ) {
+          if (index_block != block->index()) {
             MsgInitial * msg_initial = new MsgInitial;
             msg_initial->set_count(count_messages[level] + 1);
             enzo::block_array()[index_block].p_initial_hdf5_recv(msg_initial);
@@ -825,7 +825,7 @@ void EnzoInitialHdf5::load_data(int & count_messages,
   int lower[3], upper[3];
   get_reader_range(block->index(), lower, upper, level);
   int region_lower[3];
-  cello::hierarchy()->refined_region_lower(region_lower, level);
+  cello::hierarchy()->refined_region_lower(region_lower, level-1);
 
   // Loop over blocks in range of this reader at the given level.
   for (int ax = lower[0]; ax < upper[0]; ax++) {
@@ -843,8 +843,8 @@ void EnzoInitialHdf5::load_data(int & count_messages,
 
 void EnzoInitialHdf5::get_reader_range(Index reader_index, int* lower, int* upper, int level) throw() {
   int region_lower[3], region_upper[3];
-  cello::hierarchy()->refined_region_lower(region_lower, level);
-  cello::hierarchy()->refined_region_upper(region_upper, level);
+  cello::hierarchy()->refined_region_lower(region_lower, level-1);
+  cello::hierarchy()->refined_region_upper(region_upper, level-1);
 
   int root_range_lower[3], root_range_upper[3];
   root_block_range_(reader_index, root_range_lower, root_range_upper);
@@ -878,6 +878,9 @@ void EnzoInitialHdf5::recv_data (Block * block, MsgInitial * msg_initial)
   Sync * sync_msg = psync_msg_(block);
   int count = msg_initial->count();
   if ( count > 0) {
+    //########################################################
+    // std::cout << block->name() << " recv_data count " << count << std::endl;
+    //########################################################
     sync_msg->set_stop(count);
   }
 
@@ -907,7 +910,7 @@ void EnzoInitialHdf5::recv_data (Block * block, MsgInitial * msg_initial)
   // Copy data from message to block data
   if (msg_initial->data_type() == "field") {
   //########################################################
-  // std::cout << block->name() << " recv_data point 3a" << std::endl;
+  // std::cout << block->name() << " recv_data field" << std::endl;
   //########################################################
     // extract parameters from MsgInitial
     Field field = block->data()->field();
@@ -935,7 +938,7 @@ void EnzoInitialHdf5::recv_data (Block * block, MsgInitial * msg_initial)
   } else if (msg_initial->data_type() == "particle") {
 
     //########################################################
-    // std::cout << block->name() << " recv_data point 3b" << std::endl;
+    // std::cout << block->name() << " recv_data particle" << std::endl;
     //########################################################
     // extract parameters from MsgInitial
     Particle particle = block->data()->particle();
@@ -966,7 +969,7 @@ void EnzoInitialHdf5::recv_data (Block * block, MsgInitial * msg_initial)
   }
 
   //########################################################
-  // std::cout << block->name() << " recv_data point 4" << std::endl;
+  // std::cout << block->name() << " recv_data check count" << std::endl;
   //########################################################
   if (sync_msg->next()) {
     // reset for next call (note not resetting at start since may get
@@ -1327,6 +1330,7 @@ DataLoader::DataLoader(Block* block, std::string format) : block(block), m4()
 
 void DataLoader::open_file(std::string filename, std::string dataset, std::string coordinates) {
   file = new FileHdf5 ("./", filename);
+  file->file_open();
 
   if (CHECK_COSMO_PARAMS)
     check_cosmology_(file);

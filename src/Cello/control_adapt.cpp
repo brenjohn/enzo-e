@@ -76,9 +76,9 @@ void Block::adapt_begin_()
 {
   //############################################################################
   // std::cout << "Block " << name() << " entering adapt_begin 1" << std::endl;
-  if (name() == "B01:1_10:1_10:0") {
-    std::cout << "==============================" << name() << " now in adapt_begin 1" << std::endl;
-  }
+  // if (name() == "B01:1_10:1_10:0") {
+  //   std::cout << "==============================" << name() << " now in adapt_begin 1" << std::endl;
+  // }
   //############################################################################
   TRACE_ADAPT("adapt_begin_",this);
 
@@ -141,9 +141,9 @@ void Block::adapt_called_()
 {
   //############################################################################
   // std::cout << "Block " << name() << " entering adapt_called" << std::endl;
-  if (name() == "B01:1_10:1_10:0") {
-    std::cout << "==============================" << name() << " now in adapt_called" << std::endl;
-  }
+  // if (name() == "B01:1_10:1_10:0") {
+  //   std::cout << "==============================" << name() << " now in adapt_called" << std::endl;
+  // }
   //############################################################################
   TRACE_ADAPT("adapt_called_",this);
   if (! is_leaf()) {
@@ -159,7 +159,7 @@ void Block::adapt_called_()
 void Block::adapt_barrier_()
 {
   //############################################################################
-  std::cout << "Block " << name() << " entering adapt_barrier" << std::endl;
+  // std::cout << "Block " << name() << " entering adapt_barrier" << std::endl;
   //############################################################################
   if (! adapt_balanced_) {
     adapt_balanced_ = true;
