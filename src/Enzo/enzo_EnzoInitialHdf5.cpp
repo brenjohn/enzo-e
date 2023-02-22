@@ -348,8 +348,8 @@ void EnzoInitialHdf5::enforce_block( Block * block, const Hierarchy * hierarchy_
  
   // Assert: to reach this point, block must be a reading block
 
-  FieldLoader* field_loader = new FieldLoader(block, format_);
-  ParticleLoader* particle_loader = new ParticleLoader(block, l_particle_displacements_, format_);
+  FieldLoader field_loader(block, format_);
+  ParticleLoader particle_loader(block, l_particle_displacements_, format_);
   int min_level = cello::hierarchy()->min_level();
 
   // Maintain running count of messages sent
@@ -359,31 +359,31 @@ void EnzoInitialHdf5::enforce_block( Block * block, const Hierarchy * hierarchy_
   for (size_t index=0; index<field_files_.size(); index++) {
     int level = field_levels_[index];
     if (level > max_level_) {continue;}
-    field_loader->open_file(field_files_[index],
-                            field_names_[index],
-                            field_coords_[index],
-                            field_datasets_[index]);
+    field_loader.open_file(field_files_[index],
+                           field_names_[index],
+                           field_coords_[index],
+                           field_datasets_[index]);
     load_data(count_messages[level],
               block,
               level,
               min_level,
-              *field_loader);
+              field_loader);
   }
 
   // Read in particle files
   for (size_t index=0; index<particle_files_.size(); index++) {
     int level = particle_levels_[index];
     if (level > max_level_) {continue;}
-    particle_loader->open_file(particle_files_[index],
-                               particle_types_[index],
-                               particle_attributes_[index],
-                               particle_coords_[index],
-                               particle_datasets_[index]);
+    particle_loader.open_file(particle_files_[index],
+                              particle_types_[index],
+                              particle_attributes_[index],
+                              particle_coords_[index],
+                              particle_datasets_[index]);
     load_data(count_messages[level],
               block,
               level,
               min_level,
-              *particle_loader);
+              particle_loader);
   }
 
   int lower[3], upper[3];
@@ -427,7 +427,7 @@ void EnzoInitialHdf5::load_data(int & count_messages,
         int block_index[3] = {ax, ay, az};
         for (int i = 0; i < 3; i++) block_index[i] -= region_lower[i];
         Index index_block = block->index_from_global(ax, ay, az, level, min_level);
-        loader.load(block, block_index, index_block);
+        loader.load(block_index, index_block);
       }
     }
   }
@@ -461,7 +461,7 @@ void EnzoBlock::p_initial_hdf5_recv(MsgInitial * msg_initial)
 
 //----------------------------------------------------------------------
 
-void EnzoInitialHdf5::recv_data (Block * block, MsgInitial * msg_initial)
+void EnzoInitialHdf5::my_recv_data (Block * block, MsgInitial * msg_initial)
 {
   //########################################################
   // std::cout << block->name() << " recv_data point 1" << std::endl;
@@ -575,6 +575,98 @@ void EnzoInitialHdf5::recv_data (Block * block, MsgInitial * msg_initial)
   //########################################################
   delete msg_initial;
 }
+
+//#####################################################################
+void EnzoInitialHdf5::recv_data (Block * block, MsgInitial * msg_initial)
+{
+  // Exit when count reached (set_stop() may be called at any time)
+  Sync * sync_msg = psync_msg_(block);
+  int count = msg_initial->count();
+  if ( count > 0) {
+    sync_msg->set_stop(count);
+  }
+
+  /// Monitor input progress if monitor_iter_ != 0
+  static int count_monitor = 0;
+  static int count_monitor_out = 0;
+  const int blocking = (blocking_[0]*blocking_[1]*blocking_[2]-1);
+  if (monitor_iter_ &&
+      (msg_initial->data_type()!="field" &&
+       msg_initial->data_type()!="particle") &&
+      ((count_monitor == 0 || count_monitor == count-1) ||
+       ((count_monitor % (monitor_iter_*blocking)) == 0))) {
+    cello::monitor()->print("Initial", "hdf5 %d / %d",
+                            count_monitor_out,blocking);
+    count_monitor_out++;
+  }
+  count_monitor++;
+
+  std::cout << block->name() << " getting message" << std::endl;
+
+  // Copy data from message to block data
+  if (msg_initial->data_type() == "field") {
+
+    std::cout << block->name() << " opening field message" << std::endl;
+
+    FieldLoader field_loader(block, format_);
+    char * data;
+
+    if (data) {
+      std::cout << "A data ptr is not NULL" << std::endl;
+    } else {
+      std::cout << "A data ptr is NULL" << std::endl;
+    }
+
+    field_loader.read_msg(msg_initial, &data);
+
+    if (data) {
+      std::cout << "B data ptr is not NULL" << std::endl;
+    } else {
+      std::cout << "B data ptr is NULL" << std::endl;
+    }
+
+    field_loader.copy_data_local(data);
+
+    if (data) {
+      std::cout << "C data ptr is not NULL" << std::endl;
+    } else {
+      std::cout << "C data ptr is NULL" << std::endl;
+    }
+
+
+
+
+
+  } else if (msg_initial->data_type() == "particle") {
+    std::cout << block->name() << " opening particle message" << std::endl;
+    ParticleLoader particle_loader(block, l_particle_displacements_, format_);
+    char * data;
+    std::cout << block->name() << std::endl;
+    if (data) {
+      std::cout << "C data ptr is not NULL" << std::endl;
+    } else {
+      std::cout << "C data ptr is NULL" << std::endl;
+    }
+    particle_loader.read_msg(msg_initial, &data);
+    if (data) {
+      std::cout << "D data ptr is not NULL" << std::endl;
+    } else {
+      std::cout << "D data ptr is NULL" << std::endl;
+    }
+    particle_loader.copy_data_local(data);
+  }
+
+  std::cout << block->name() << " has read message" << std::endl;
+
+  if (sync_msg->next()) {
+    // reset for next call (note not resetting at start since may get
+    // called after messages received)
+    sync_msg->reset();
+    block->initial_done();
+  }
+  delete msg_initial;
+}
+//#####################################################################
 
 //======================================================================
 
@@ -913,7 +1005,7 @@ void EnzoInitialHdf5::check_cosmology_(File * file) const
 DataLoader::DataLoader(Block* block, std::string format) : block(block), m4()
 {
   Field field = block->data()->field();
-  field.dimensions (0,&mx,&my,&mz);
+  field.dimensions (0,&mx,&my,&mz); // (index_field,&mx,&my,&mz); int index_field = field.field_id(name);
   field.size         (&nx,&ny,&nz);
 
   block->lower(lower_block, lower_block+1, lower_block+2);
@@ -940,11 +1032,11 @@ void DataLoader::open_file(std::string filename, std::string dataset, std::strin
   coords = coordinates;
 }
 
-void DataLoader::load(Block* block, int* block_index, Index index_block) {
+void DataLoader::load(int* block_index, Index index_block) {
   char * data;
   read_dataset_(&data, index_block, block_index);
 
-  (index_block == block->index()) ? copy_data_local(block, data) : copy_data_remote(index_block, data);
+  (index_block == block->index()) ? copy_data_local(data) : copy_data_remote(index_block, data);
   delete_array_(&data, type_data);
 }
 
@@ -1079,8 +1171,13 @@ void DataLoader::check_cosmology_(File * file) const
 
 
 
-void FieldLoader::copy_data_local(Block* block, char * data) {
-  copy_dataset_to_field_(block, data);
+void FieldLoader::read_msg(MsgInitial * msg_initial, char ** data) {
+  msg_initial->get_dataset(n4,h4,&nx,&ny,&nz,&IX,&IY,&IZ);
+  msg_initial->get_field_data(&name, data, &type_data);
+}
+
+void FieldLoader::copy_data_local(char * data) {
+  copy_dataset_to_field_(data);
 }
 
 void FieldLoader::copy_data_remote(Index index_block, char * data) {
@@ -1090,14 +1187,15 @@ void FieldLoader::copy_data_remote(Index index_block, char * data) {
   enzo::block_array()[index_block].p_initial_hdf5_recv(msg_initial);
 }
 
-void FieldLoader::copy_dataset_to_field_(Block * block, char * data) {
+void FieldLoader::copy_dataset_to_field_(char * data) {
   Field field = block->data()->field();
-
   // Destination is this block--copy directly
   enzo_float * array = (enzo_float *) field.values(name);
 
   if (type_data == type_single) {
+    // std::cout << "I'm here at Ed1i" << std::endl;
     copy_field_data_to_array_(array, (float *) data);
+    // std::cout << "I'm here at Ed1f" << std::endl;
   } else if (type_data == type_double) {
     copy_field_data_to_array_(array, (double *) data);
   }
@@ -1122,8 +1220,16 @@ void FieldLoader::copy_field_data_to_array_(enzo_float * array, T * data) const 
 
 
 
-void ParticleLoader::copy_data_local(Block* block, char * data) {
-  copy_dataset_to_particle_(block, data);
+void ParticleLoader::read_msg(MsgInitial * msg_initial, char ** data) {
+  msg_initial->get_dataset (n4,h4,&nx,&ny,&nz,&IX,&IY,&IZ);
+  int data_size;
+  msg_initial->get_particle_data(&type,
+                                 &attribute,
+                                 data,&data_size,&type_data);
+}
+
+void ParticleLoader::copy_data_local(char * data) {
+  copy_dataset_to_particle_(data);
 }
 
 void ParticleLoader::copy_data_remote(Index index_block, char * data) {
@@ -1134,7 +1240,7 @@ void ParticleLoader::copy_data_remote(Index index_block, char * data) {
   enzo::block_array()[index_block].p_initial_hdf5_recv(msg_initial);
 }
 
-void ParticleLoader::copy_dataset_to_particle_(Block * block, char * data) {
+void ParticleLoader::copy_dataset_to_particle_(char * data) {
   // Create particles and initialize them
   Particle particle = block->data()->particle();
 

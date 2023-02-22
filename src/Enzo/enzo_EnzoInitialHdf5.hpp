@@ -22,10 +22,10 @@ class DataLoader{
       file->file_close();
     }
 
-    void load(Block* block, int* block_index, Index index_block);
+    void load(int* block_index, Index index_block);
     void delete_array_(char ** array, int type_data);
     char * allocate_array_ (int n, int type_data);
-    virtual void copy_data_local(Block* block, char * data) {}
+    virtual void copy_data_local(char * data) {}
     virtual void copy_data_remote(Index index_block, char * data) {}
     void read_dataset_(char ** data, Index index_block, int block_index[3]);
     void check_cosmology_(File * file) const;
@@ -64,9 +64,10 @@ class FieldLoader : public DataLoader {
       name = field_name;
     }
 
-    virtual void copy_data_local(Block* block, char * data);
+    void read_msg(MsgInitial * msg_initial, char ** data);
+    virtual void copy_data_local(char * data);
     virtual void copy_data_remote(Index index_block, char * data);
-    void copy_dataset_to_field_(Block * block, char * data);
+    void copy_dataset_to_field_(char * data);
 
     template <class T>
     void copy_field_data_to_array_(enzo_float * array, T * data) const;
@@ -93,9 +94,10 @@ class ParticleLoader : public DataLoader {
       attribute = particle_attribute;
     }
 
-    virtual void copy_data_local(Block* block, char * data);
+    void read_msg(MsgInitial * msg_initial, char ** data);
+    virtual void copy_data_local(char * data);
     virtual void copy_data_remote(Index index_block, char * data);
-    void copy_dataset_to_particle_(Block * block, char * data);
+    void copy_dataset_to_particle_(char * data);
     template <class T, class S>
     void copy_particle_data_to_array_(T * array, S * data, Particle particle, int it, int ia, int np);
     template <class T>
@@ -170,6 +172,7 @@ public: // interface
   void enforce_block2( Block * block, const Hierarchy * hierarchy_unused) throw();
   void get_reader_range(Index reader_index, int lower[3], int upper[3], int level) throw();
   void load_data(int & count_messages, Block * block, int level, int min_level, DataLoader & loader);
+  void my_recv_data (Block * block, MsgInitial * msg_initial);
   //########################################################
 
   void recv_data (Block * block, MsgInitial * msg_initial);
