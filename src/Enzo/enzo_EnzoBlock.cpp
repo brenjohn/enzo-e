@@ -489,7 +489,7 @@ void EnzoBlock::initialize () throw()
 void EnzoBlock::instantiate_children(){
 
   // const int nb[3] = {2, 2, 2};
-  std::cout << "initialize_children being called by: " << name() << std::endl;
+  // std::cout << "initialize_children being called by: " << name() << std::endl;
   // std::cout << "p_initialize_children being called by: " << thisIndex.bit_string(0, 3, nb) << std::endl;
 
   child_face_level_curr_.resize(cello::num_children()*27);
@@ -584,10 +584,10 @@ void EnzoBlock::create_child_blocks(){
   bool spawn_children = spawn_child_blocks();
 
   if (spawn_children) {
-    //std::cout << name() << " should spawn children" << std::endl;
+    // std::cout << name() << " should spawn children" << std::endl;
     instantiate_children();
   } else {
-    //std::cout << name() << " should not spawn children" << std::endl;
+    // std::cout << name() << " should not spawn children" << std::endl;
   }
 
   return;
@@ -599,15 +599,15 @@ bool EnzoBlock::spawn_child_blocks(){
     
     if (level + 1 <= enzo::simulation()->config()->refined_regions_lower.size()) {
 
-      int* lower = enzo::simulation()->config()->refined_regions_lower.at(level);
-      int* upper = enzo::simulation()->config()->refined_regions_upper.at(level);
+      std::vector<int> lower = enzo::simulation()->config()->refined_regions_lower.at(level);
+      std::vector<int> upper = enzo::simulation()->config()->refined_regions_upper.at(level);
 
       int ix, iy, iz, nx, ny, nz;
       index_global(&ix, &iy, &iz, &nx, &ny, &nz);
 
-      if (lower[0] <= ix && ix < upper[0]) {
-        if (lower[1] <= iy && iy < upper[1]) {
-          if (lower[2] <= iz && iz < upper[2]) {
+      if (lower.at(0) <= ix && ix < upper.at(0)) {
+        if (lower.at(1) <= iy && iy < upper.at(1)) {
+          if (lower.at(2) <= iz && iz < upper.at(2)) {
             return true;
           }
         }

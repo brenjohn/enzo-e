@@ -344,10 +344,11 @@ void Hierarchy::create_subblock_array
 // }
 
 void Hierarchy::refined_region_lower(int* region_lower, int level){
+  // std::cout << "level is " << level << " size is " << refined_regions_lower_.size() << std::endl;
   if (level >= 0){
-    region_lower[0] = refined_regions_lower_.at(level)[0];
-    region_lower[1] = refined_regions_lower_.at(level)[1];
-    region_lower[2] = refined_regions_lower_.at(level)[2];
+    region_lower[0] = refined_regions_lower_.at(level).at(0);
+    region_lower[1] = refined_regions_lower_.at(level).at(1);
+    region_lower[2] = refined_regions_lower_.at(level).at(2);
   } else {
     region_lower[0] = 0;
     region_lower[1] = 0;
@@ -358,9 +359,9 @@ void Hierarchy::refined_region_lower(int* region_lower, int level){
 
 void Hierarchy::refined_region_upper(int* region_upper, int level){
   if (level >= 0) {
-    region_upper[0] = refined_regions_upper_.at(level)[0];
-    region_upper[1] = refined_regions_upper_.at(level)[1];
-    region_upper[2] = refined_regions_upper_.at(level)[2];
+    region_upper[0] = refined_regions_upper_.at(level).at(0);
+    region_upper[1] = refined_regions_upper_.at(level).at(1);
+    region_upper[2] = refined_regions_upper_.at(level).at(2);
   } else {
     root_blocks(region_upper, region_upper+1, region_upper+2);
   }

@@ -604,9 +604,9 @@ void Block::adapt_send_level()
     ++index_count[index_neighbor];
   }
   //##################################
-  if (name() == "B01:1_10:1_10:0") {
-    std::cout << "==============================" << name() << " now in adapt_send_level" << std::endl;
-  }
+  // if (name() == "B01:1_10:1_10:0") {
+  //   std::cout << "==============================" << name() << " now in adapt_send_level" << std::endl;
+  // }
   // std::cout << name() << " sending adapt message to:" << std::endl;
   // int count = 0;
   //##################################
@@ -652,17 +652,17 @@ void Block::adapt_send_level()
       // count++;
       // std::cout << "-------" << name(index_neighbor) << " " << count << std::endl;
 
-      if (name() == "B01_11_10") {
-        std::cout << name() << " sending levels to >>> " << name(index_neighbor) << std::endl;
-      }
+      // if (name() == "B01_11_10") {
+      //   std::cout << name() << " sending levels to >>> " << name(index_neighbor) << std::endl;
+      // }
 
-      if (name(index_neighbor) == "B01_11_10") {
-        std::cout << name(index_neighbor) << " getting levels from <<< " << name() << std::endl;
-      }
+      // if (name(index_neighbor) == "B01_11_10") {
+      //   std::cout << name(index_neighbor) << " getting levels from <<< " << name() << std::endl;
+      // }
 
-      if (name() == "B01:1_10:1_10:0") {
-        std::cout << "-----------------------------------" << name() << " sending levels to >>> " << name(index_neighbor) << std::endl;
-      }
+      // if (name() == "B01:1_10:1_10:0") {
+      //   std::cout << "-----------------------------------" << name() << " sending levels to >>> " << name(index_neighbor) << std::endl;
+      // }
       //##################################
       thisProxy[index_neighbor].p_adapt_recv_level (msg_map[index_neighbor]);
     }
@@ -870,15 +870,15 @@ void Block::adapt_recv_level
     level_next_ = level_min;
     adapt_send_level();
     //######################
-    std::cout << name() << " changed is true" << std::endl;
+    // std::cout << name() << " changed is true" << std::endl;
     //######################
   }
   TRACE_ADAPT("testing convergence",this);
   //######################
-  if (name() == "B01_11_10") {
-    std::cout << name() << " neighbors_converged is " << adapt_.neighbors_converged() << std::endl;
-    std::cout << name() << " is_converged is " << adapt_.is_converged() << std::endl;
-  }
+  // if (name() == "B01_11_10") {
+  //   std::cout << name() << " neighbors_converged is " << adapt_.neighbors_converged() << std::endl;
+  //   std::cout << name() << " is_converged is " << adapt_.is_converged() << std::endl;
+  // }
   //######################
   if (adapt_.neighbors_converged() && adapt_.is_converged()) {
     TRACE_ADAPT("adapt_barrier [recv_level]",this);

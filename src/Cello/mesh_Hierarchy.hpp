@@ -214,11 +214,11 @@ public: // interface
   void refined_region_lower(int region_lower[3], int level);
   void refined_region_upper(int region_upper[3], int level);
 
-  void set_refined_regions_lower(std::vector< int* > lower) throw() {
+  void set_refined_regions_lower(std::vector< std::vector<int> > lower) throw() {
     refined_regions_lower_ = lower;
   }
 
-  void set_refined_regions_upper(std::vector< int* > upper) throw() {
+  void set_refined_regions_upper(std::vector< std::vector<int> > upper) throw() {
     refined_regions_upper_ = upper;
   }
   //###################################################
@@ -247,8 +247,8 @@ protected: // attributes
   int max_level_;
 
   //########################
-  std::vector< int* > refined_regions_lower_;
-  std::vector< int* > refined_regions_upper_;
+  std::vector< std::vector<int> > refined_regions_lower_;
+  std::vector< std::vector<int> > refined_regions_upper_;
   //########################
 
   /// Maximum number of refinement levels

@@ -84,13 +84,13 @@ class ParticleLoader : public DataLoader {
 
     void open_file(std::string filename,
                   std::string particle_type,
-                  std::string particle_attributes,
+                  std::string particle_attribute,
                   std::string particle_coords,
                   std::string particle_dataset)
     {
       DataLoader::open_file(filename, particle_dataset, particle_coords);
       type = particle_type;
-      attributes = particle_attributes;
+      attribute = particle_attribute;
     }
 
     virtual void copy_data_local(Block* block, char * data);
@@ -103,7 +103,7 @@ class ParticleLoader : public DataLoader {
 
     // Attributes
     std::string type;
-    std::string attributes;
+    std::string attribute;
     bool l_particle_displacements_;
 };
 //##################################################################
@@ -168,7 +168,7 @@ public: // interface
   // void enforce_block1( Block * block, const Hierarchy * hierarchy_unused ) throw();
 
   void enforce_block2( Block * block, const Hierarchy * hierarchy_unused) throw();
-  void get_reader_range(Index reader_index, int* lower, int* upper, int level) throw();
+  void get_reader_range(Index reader_index, int lower[3], int upper[3], int level) throw();
   void load_data(int & count_messages, Block * block, int level, int min_level, DataLoader & loader);
   //########################################################
 

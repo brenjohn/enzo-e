@@ -141,7 +141,7 @@ void  Block::initial_new_next_()
 void  Block::initial_done()
 {
   //############################################################################
-  // std::cout << "Block " << name() << " entering initial_new_done" << std::endl;
+  // std::cout << "Block " << name() << " entering initial_done" << std::endl;
   //############################################################################
   if (cello::config()->initial_new) {
 
