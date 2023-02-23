@@ -601,62 +601,19 @@ void EnzoInitialHdf5::recv_data (Block * block, MsgInitial * msg_initial)
   }
   count_monitor++;
 
-  std::cout << block->name() << " getting message" << std::endl;
-
   // Copy data from message to block data
   if (msg_initial->data_type() == "field") {
-
-    std::cout << block->name() << " opening field message" << std::endl;
-
     FieldLoader field_loader(block, format_);
     char * data;
-
-    if (data) {
-      std::cout << "A data ptr is not NULL" << std::endl;
-    } else {
-      std::cout << "A data ptr is NULL" << std::endl;
-    }
-
     field_loader.read_msg(msg_initial, &data);
-
-    if (data) {
-      std::cout << "B data ptr is not NULL" << std::endl;
-    } else {
-      std::cout << "B data ptr is NULL" << std::endl;
-    }
-
     field_loader.copy_data_local(data);
 
-    if (data) {
-      std::cout << "C data ptr is not NULL" << std::endl;
-    } else {
-      std::cout << "C data ptr is NULL" << std::endl;
-    }
-
-
-
-
-
   } else if (msg_initial->data_type() == "particle") {
-    std::cout << block->name() << " opening particle message" << std::endl;
     ParticleLoader particle_loader(block, l_particle_displacements_, format_);
     char * data;
-    std::cout << block->name() << std::endl;
-    if (data) {
-      std::cout << "C data ptr is not NULL" << std::endl;
-    } else {
-      std::cout << "C data ptr is NULL" << std::endl;
-    }
     particle_loader.read_msg(msg_initial, &data);
-    if (data) {
-      std::cout << "D data ptr is not NULL" << std::endl;
-    } else {
-      std::cout << "D data ptr is NULL" << std::endl;
-    }
     particle_loader.copy_data_local(data);
   }
-
-  std::cout << block->name() << " has read message" << std::endl;
 
   if (sync_msg->next()) {
     // reset for next call (note not resetting at start since may get
@@ -1005,7 +962,8 @@ void EnzoInitialHdf5::check_cosmology_(File * file) const
 DataLoader::DataLoader(Block* block, std::string format) : block(block), m4()
 {
   Field field = block->data()->field();
-  field.dimensions (0,&mx,&my,&mz); // (index_field,&mx,&my,&mz); int index_field = field.field_id(name);
+  // int index_field = field.field_id(name);
+  // field.dimensions (0,&mx,&my,&mz); // (index_field,&mx,&my,&mz); int index_field = field.field_id(name);
   field.size         (&nx,&ny,&nz);
 
   block->lower(lower_block, lower_block+1, lower_block+2);
@@ -1174,6 +1132,9 @@ void DataLoader::check_cosmology_(File * file) const
 void FieldLoader::read_msg(MsgInitial * msg_initial, char ** data) {
   msg_initial->get_dataset(n4,h4,&nx,&ny,&nz,&IX,&IY,&IZ);
   msg_initial->get_field_data(&name, data, &type_data);
+  Field field = block->data()->field();
+  int index_field = field.field_id(name);
+  field.dimensions (index_field,&mx,&my,&mz);
 }
 
 void FieldLoader::copy_data_local(char * data) {
@@ -1193,9 +1154,7 @@ void FieldLoader::copy_dataset_to_field_(char * data) {
   enzo_float * array = (enzo_float *) field.values(name);
 
   if (type_data == type_single) {
-    // std::cout << "I'm here at Ed1i" << std::endl;
     copy_field_data_to_array_(array, (float *) data);
-    // std::cout << "I'm here at Ed1f" << std::endl;
   } else if (type_data == type_double) {
     copy_field_data_to_array_(array, (double *) data);
   }

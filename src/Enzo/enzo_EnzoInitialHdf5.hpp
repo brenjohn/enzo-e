@@ -13,7 +13,7 @@ class DataLoader{
   public:
     DataLoader(Block* block, std::string format);
 
-    ~DataLoader(){delete file;}
+    // ~DataLoader(){delete file;}
 
     virtual void open_file(std::string filename, std::string dataset, std::string coordinates);
 
@@ -37,7 +37,6 @@ class DataLoader{
     int type_data;
     double lower_block[3];
     double upper_block[3];
-    int mx, my, mz;
     int nx, ny, nz;
     int n4[4], IX, IY, IZ;
     double h4[4];
@@ -53,6 +52,7 @@ class FieldLoader : public DataLoader {
     {
       Field field = block->data()->field();
       field.ghost_depth(0,&gx,&gy,&gz);
+      field.dimensions (0,&mx,&my,&mz);
     }
 
     void open_file(std::string filename, 
@@ -73,6 +73,7 @@ class FieldLoader : public DataLoader {
     void copy_field_data_to_array_(enzo_float * array, T * data) const;
 
     // Attributes
+    int mx, my, mz;
     int gx, gy, gz;
     std::string name;
 };
