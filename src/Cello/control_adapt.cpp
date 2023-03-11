@@ -1036,7 +1036,17 @@ void Block::initialize_child_face_levels_()
       const int level_face =
         adapt_.face_level(ip3,Adapt::LevelType::curr);
       int level_child_face = (inp == thisIndex) ?
-        (level + 1) : level_face;
+        (level + 1) : level_face + refine_during_initialization(in);
+      //################################################
+      // bool refine = refine_during_initialization(in);
+      // if (refine)
+      //   level_child_face++;
+      if (name() == "B0110:1_0110:1_0110:1"){
+        // std::cout << "checking " << name(in) << std::endl;
+        if (refine_during_initialization(in))
+          std::cout << name(in) << std::endl;
+      }
+      //################################################
       set_child_face_level_curr(ic3,if3, level_child_face);
     }
 
@@ -1046,6 +1056,29 @@ void Block::initialize_child_face_levels_()
   }
 
   child_face_level_next_ = child_face_level_curr_;
+  //####################################
+  if (name() == "B0110:1_0110:1_0110:1"){
+    for (int c=0; c<8; c++) {
+      std::cout << "child " << c << " of " << name() << std::endl;
+      for (int i=0; i<27; i++){
+        std::cout << child_face_level_curr_[8*c+i] << " ";
+      }
+      std::cout << std::endl;
+
+      Index index_child = index_.index_child(ic3);
+      ItFace it_face = this->it_face(min_face_rank,index_child);
+      int if3[3];
+      int count = 0;
+      while (it_face.next(if3)) {
+        Index in = neighbor_ (if3,&index_child);
+        std::cout << count << "------" << name(in) << std::endl;
+        count++;
+      }
+
+    }
+    std::cout << std::endl;
+  }
+  //####################################
 }
 
 //----------------------------------------------------------------------
