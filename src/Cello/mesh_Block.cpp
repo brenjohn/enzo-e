@@ -266,16 +266,16 @@ void Block::init_refine_
     adapt_.reset_face_level (Adapt::LevelType::curr);
 
     // Compute and set the face levels of
-    int if3[3], na3[3], face_levels[27] = {};
-    size_array(na3,na3+1,na3+2);
-    ItFace it_face = this->it_face(cello::config()->adapt_min_face_rank, index_);
-    while (it_face.next(if3)) {
-      Index neighbor_index = index_.index_neighbor(if3, na3);
-      bool refine = refine_during_initialization(neighbor_index);
-      // TODO: This assumes we only refine to level 1 during initialization.
-      face_levels[IF3(if3)] = refine ? 1 : 0;
-    }
-    adapt_.copy_face_level(Adapt::LevelType::curr, face_levels);
+    // int if3[3], na3[3], face_levels[27] = {};
+    // size_array(na3,na3+1,na3+2);
+    // ItFace it_face = this->it_face(cello::config()->adapt_min_face_rank, index_);
+    // while (it_face.next(if3)) {
+    //   Index neighbor_index = index_.index_neighbor(if3, na3);
+    //   bool refine = refine_during_initialization(neighbor_index);
+    //   // TODO: This assumes we only refine to level 1 during initialization.
+    //   face_levels[IF3(if3)] = refine ? 1 : 0;
+    // }
+    // adapt_.copy_face_level(Adapt::LevelType::curr, face_levels);
 
   } else {
 
