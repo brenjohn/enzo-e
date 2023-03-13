@@ -711,6 +711,9 @@ void Block::adapt_recv_level
     const int level = this->level();
 
     if ( ! is_leaf()) {
+      //####################
+      std::cout << name() << " : " << name(index_send) << std::endl;
+      //####################
 
       ERROR1 ("Block::p_adapt_recv_level()",
               "Block %s is not a leaf",
@@ -1036,15 +1039,17 @@ void Block::initialize_child_face_levels_()
       const int level_face =
         adapt_.face_level(ip3,Adapt::LevelType::curr);
       int level_child_face = (inp == thisIndex) ?
-        (level + 1) : level_face + refine_during_initialization(inp);
+        (level + 1) : level_face;
+      if (refine_during_initialization(in))
+        level_child_face++;
       //################################################
       // bool refine = refine_during_initialization(in);
       // if (refine)
       //   level_child_face++;
-      if (name() == "B0110:1_0110:1_0110:1"){
+      if (name() == "B0111:0_0110:1_0110:1"){
         // std::cout << "checking " << name(in) << " " << refine_during_initialization(in) << std::endl;
-        if (level_face == 2) {std::cout << "level_face is 2 for " << name(in) << std::endl;}
-        if (refine_during_initialization(in) == 1) {std::cout << "=================" << name(in) << std::endl;}
+        // if (level_face == 2) {std::cout << "level_face is 2 for " << name(in) << std::endl;}
+        // if (refine_during_initialization(in) == 1) {std::cout << "=================" << name(in) << std::endl;}
       }
       //################################################
       set_child_face_level_curr(ic3,if3, level_child_face);
@@ -1057,7 +1062,7 @@ void Block::initialize_child_face_levels_()
 
   child_face_level_next_ = child_face_level_curr_;
   //####################################
-  if (name() == "B0110:1_0110:1_0110:1"){
+  if (name() == "B0111:0_0111:0_1000:1"){
     for (int c=0; c<8; c++) {
       std::cout << "child " << c << " of " << name() << std::endl;
       int num_2s = 0;
