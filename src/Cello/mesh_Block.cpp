@@ -814,19 +814,19 @@ void Block::init_adapt_(Adapt * adapt_parent)
       }
     }
 
-    // replace neighbor blocks with their child blocks if they refine
-    // during the initialization phase.
-    int max_initial_level = cello::config()->mesh_max_initial_level;
-    for (int level_i=0; level_i < max_initial_level; level_i++){
-      std::vector<Index> neighbors = adapt_.index_neighbors();
-      for (int i=0; i<(int) neighbors.size(); i++){
-        Index neighbor_index = neighbors.at(i);
-        if (neighbor_index.level() == level_i){
-          if (refine_during_initialization(neighbor_index))
-            adapt_.refine_neighbor(neighbor_index);
-        }
-      }
-    }
+    // // replace neighbor blocks with their child blocks if they refine
+    // // during the initialization phase.
+    // int max_initial_level = cello::config()->mesh_max_initial_level;
+    // for (int level_i=0; level_i < max_initial_level; level_i++){
+    //   std::vector<Index> neighbors = adapt_.index_neighbors();
+    //   for (int i=0; i<(int) neighbors.size(); i++){
+    //     Index neighbor_index = neighbors.at(i);
+    //     if (neighbor_index.level() == level_i){
+    //       if (refine_during_initialization(neighbor_index))
+    //         adapt_.refine_neighbor(neighbor_index);
+    //     }
+    //   }
+    // }
   
   } else if (level > 0) {
     // else if a refined Block, initialize adapt from its incoming
@@ -841,6 +841,28 @@ void Block::init_adapt_(Adapt * adapt_parent)
     adapt_.print("init_adapt child after",this);
 #endif    
   }
+
+  // replace neighbor blocks with their child blocks if they refine
+  // during the initialization phase.
+  int max_initial_level = cello::config()->mesh_max_initial_level;
+  for (int level_i=level; level_i < max_initial_level; level_i++){
+    std::vector<Index> neighbors = adapt_.index_neighbors();
+    for (int i=0; i<(int) neighbors.size(); i++){
+      Index neighbor_index = neighbors.at(i);
+      if (neighbor_index.level() == level_i){
+        if (refine_during_initialization(neighbor_index))
+          adapt_.refine_neighbor(neighbor_index);
+      }
+    }
+  }
+
+  // if (name() == "B0111:01_0111:00_0111:00") {
+  //   std::vector<Index> neighbor_inds = adapt_.index_neighbors();
+  //   for (int i=0; i<neighbor_inds.size(); i++){
+  //     std::cout << name(neighbor_inds.at(i)) << std::endl;
+  //   }
+  //   std::cout << "========================" << std::endl;
+  // }
 }
 
 //----------------------------------------------------------------------

@@ -126,6 +126,11 @@ void Block::adapt_barrier_()
     adapt_balanced_ = true;
     TRACE_ADAPT("calling contribute",this);
     int changed = (is_leaf() && (level() != level_next_)) ? 1 : 0;
+    //#####################
+    // if (level() == 2){
+    //   std::cout << name() << " reached barrier" << std::endl;
+    // }
+    //#####################
     CkCallback callback = CkCallback
       (CkIndex_Block::r_adapt_next(nullptr), 
        proxy_array());
@@ -664,6 +669,11 @@ void Block::adapt_recv_level
  bool can_coarsen
  )
 {
+  //############################
+  // if (name() == "B0111:01_0111:00_0111:00") {
+  //   std::cout << name() << " : " << name(index_send) << " " << adapt_.num_neighbors() << std::endl;
+  // }
+  //############################
   bool changed = false;
   int level_min;
   performance_start_(perf_adapt_update);
@@ -712,7 +722,7 @@ void Block::adapt_recv_level
 
     if ( ! is_leaf()) {
       //####################
-      std::cout << name() << " : " << name(index_send) << std::endl;
+      // std::cout << name() << " : " << name(index_send) << std::endl;
       //####################
 
       ERROR1 ("Block::p_adapt_recv_level()",
@@ -1046,11 +1056,11 @@ void Block::initialize_child_face_levels_()
       // bool refine = refine_during_initialization(in);
       // if (refine)
       //   level_child_face++;
-      if (name() == "B0111:0_0110:1_0110:1"){
-        // std::cout << "checking " << name(in) << " " << refine_during_initialization(in) << std::endl;
-        // if (level_face == 2) {std::cout << "level_face is 2 for " << name(in) << std::endl;}
-        // if (refine_during_initialization(in) == 1) {std::cout << "=================" << name(in) << std::endl;}
-      }
+      // if (name() == "B0111:0_0110:1_0110:1"){
+      //   // std::cout << "checking " << name(in) << " " << refine_during_initialization(in) << std::endl;
+      //   // if (level_face == 2) {std::cout << "level_face is 2 for " << name(in) << std::endl;}
+      //   // if (refine_during_initialization(in) == 1) {std::cout << "=================" << name(in) << std::endl;}
+      // }
       //################################################
       set_child_face_level_curr(ic3,if3, level_child_face);
     }
@@ -1062,28 +1072,28 @@ void Block::initialize_child_face_levels_()
 
   child_face_level_next_ = child_face_level_curr_;
   //####################################
-  if (name() == "B0111:0_0111:0_1000:1"){
-    for (int c=0; c<8; c++) {
-      std::cout << "child " << c << " of " << name() << std::endl;
-      int num_2s = 0;
-      for (int i=0; i<27; i++){
-        if (child_face_level_curr_[27*c+i] == 2) {num_2s++;}
-        std::cout << child_face_level_curr_[27*c+i] << " ";
-      }
-      std::cout << " num_2s = " << num_2s << std::endl;
+  // if (name() == "B0111:01_0111:00_0111:00"){
+  //   for (int c=0; c<8; c++) {
+  //     std::cout << "child " << c << " of " << name() << std::endl;
+  //     int num_2s = 0;
+  //     for (int i=0; i<27; i++){
+  //       if (child_face_level_curr_[27*c+i] == 2) {num_2s++;}
+  //       std::cout << child_face_level_curr_[27*c+i] << " ";
+  //     }
+  //     std::cout << " num_2s = " << num_2s << std::endl;
 
-      int my_ic3[3] = {1, 1, 1};
-      Index index_child = index_.index_child(my_ic3);
-      ItFace it_face = this->it_face(min_face_rank,index_child);
-      int if3[3];
-      while (it_face.next(if3)) {
-        Index in = neighbor_ (if3,&index_child);
-        std::cout << IF3(if3) << "------" << name(in) << std::endl;
-      }
+  //     int my_ic3[3] = {1, 1, 1};
+  //     Index index_child = index_.index_child(my_ic3);
+  //     ItFace it_face = this->it_face(min_face_rank,index_child);
+  //     int if3[3];
+  //     while (it_face.next(if3)) {
+  //       Index in = neighbor_ (if3,&index_child);
+  //       std::cout << IF3(if3) << "------" << name(in) << std::endl;
+  //     }
 
-    }
-    std::cout << std::endl;
-  }
+  //   }
+  //   std::cout << std::endl;
+  // }
   //####################################
 }
 
