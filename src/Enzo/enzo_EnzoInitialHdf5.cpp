@@ -306,7 +306,7 @@ void EnzoInitialHdf5::root_block_range_(Index index, int array_lower[3], int arr
 
 void EnzoInitialHdf5::initialize_particle_mass(Block * block) {
   Particle particle = block->data()->particle();
-  int divisor = 2^cello::rank();
+  int divisor = (2^cello::rank())^block->level();
 
   for (int it=0; it<particle->num_types(); it++) {
     if (particle->has_constant(it, "root_level_mass")) {
@@ -317,11 +317,18 @@ void EnzoInitialHdf5::initialize_particle_mass(Block * block) {
       char* root_mass = particle->constant_value(it, ic);
       int np = particle->num_particles(it);
 
+      union {
+        float *  array_float;
+        double * array_double;
+      };
+
+      const int type_array = particle.attribute_type(it,ia);
+
       for (int ip=0; ip<np; ip++) {
         int ib, io;
         particle.index(ip,&ib,&io);
         array = (T*)particle.attribute_array(it,ia,ib);
-        array[io] = root_mass / (divisor^block->level());
+        array[io] = root_mass / divisor;
       }
     }
   }
