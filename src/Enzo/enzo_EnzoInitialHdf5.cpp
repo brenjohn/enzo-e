@@ -168,6 +168,7 @@ void EnzoInitialHdf5::enforce_block
     }
   }
 
+  initialize_particle_mass(block);
   block->initial_done();
 }
 
@@ -269,7 +270,8 @@ void EnzoInitialHdf5::recv_data (Block * block, MsgInitial * msg_initial)
     // reset for next call (note not resetting at start since may get
     // called after messages received)
     sync_msg->reset();
-    block->initial_done();
+    initialize_particle_mass();
+    block->initial_done(block);
   }
   delete msg_initial;
 }
@@ -300,6 +302,29 @@ void EnzoInitialHdf5::root_block_range_(Index index, int array_lower[3], int arr
   array_upper[0] = std::min(array_lower[0] + blocking_[0],root_blocks[0]);
   array_upper[1] = std::min(array_lower[1] + blocking_[1],root_blocks[1]);
   array_upper[2] = std::min(array_lower[2] + blocking_[2],root_blocks[2]);
+}
+
+void EnzoInitialHdf5::initialize_particle_mass(Block * block) {
+  Particle particle = block->data()->particle();
+  int divisor = 2^cello::rank();
+
+  for (int it=0; it<particle->num_types(); it++) {
+    if (particle->has_constant(it, "root_level_mass")) {
+      //TODO: print warning if masses read from data file is being over written
+
+      int ic = particle->constant_index(it, "root_level_mass");
+      int ia = particle->attribute_index(it, "mass");
+      char* root_mass = particle->constant_value(it, ic);
+      int np = particle->num_particles(it);
+
+      for (int ip=0; ip<np; ip++) {
+        int ib, io;
+        particle.index(ip,&ib,&io);
+        array = (T*)particle.attribute_array(it,ia,ib);
+        array[io] = root_mass / (divisor^block->level());
+      }
+    }
+  }
 }
 
 
