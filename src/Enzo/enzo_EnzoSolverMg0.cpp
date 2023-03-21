@@ -263,10 +263,16 @@ void EnzoSolverMg0::enter_solver_ (EnzoBlock * enzo_block) throw()
     // if A is singular (
 
     long double reduce[2] = {0.0, 0.0};
-
     if (is_finest_(enzo_block)) {
+      //###
+      std::cout << "Before: Size is " << sizeof(reduce) << std::endl;
+      //###
 
       compute_shift_(enzo_block,reduce);
+
+      //###
+      std::cout << "After : Size is " << sizeof(reduce) << std::endl;
+      //###
     }
 
     /// initiate callback for p_solver_begin_solve and contribute to
