@@ -348,6 +348,9 @@ void Simulation::p_get_msg_refine(Index index)
 
 void Simulation::set_msg_refine(Index index, MsgRefine * msg)
 {
+  if (index.level() == 3) {
+    std::cout << "now in set_msg_refine" << std::endl;
+  }
   if (msg_refine_map_[index] != NULL) {
    
     int v3[3];

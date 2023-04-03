@@ -85,6 +85,11 @@ Block::Block ( process_type ip_source, MsgType msg_type )
   thisIndex.array(array_,array_+1,array_+2);
 
   if (msg_type == MsgType::msg_refine) {
+    //#########
+    if (name(thisIndex) == "B0111:100_0111:100_0111:100") {
+      std::cout << "Now in Block constructor" << std::endl;
+    }
+    //#########
     proxy_simulation[ip_source].p_get_msg_refine(thisIndex);
   }
 
@@ -96,6 +101,12 @@ void Block::p_set_msg_refine(MsgRefine * msg)
 {
   performance_start_(perf_block);
 
+  //##################
+  if (level() == 3) {
+    std::cout << name() << " about to call init_refine" << std::endl;
+  }
+  //##################
+
   init_refine_ (msg->index_,
 	msg->nx_, msg->ny_, msg->nz_,
 	msg->num_field_blocks_,
@@ -104,6 +115,19 @@ void Block::p_set_msg_refine(MsgRefine * msg)
 	0, NULL, msg->refresh_type_,
 	msg->num_face_level_, msg->face_level_,
         msg->adapt_parent_);
+
+  //#############
+  if (level() == 3) {
+    std::cout << name() << " just called init_refine" << std::endl;
+  }
+  if (name() == "B0111:100_0111:100_0111:100") {
+    if (data_ == NULL) {
+      std::cout << "Data initialized as Null" << std::endl;
+    } else {
+      std::cout << "Data not initialized as Null" << std::endl;
+    }
+  }
+  //#############
 
   init_adapt_(msg->adapt_parent_);
 

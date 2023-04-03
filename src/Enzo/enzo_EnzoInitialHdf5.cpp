@@ -102,12 +102,22 @@ void EnzoInitialHdf5::enforce_block
     block->initial_done();
     return;
   } else if (! is_reader_(block->index())) {
+    //############
+    if (block->name() == "B0111:100_0111:100_0111:100") {
+      std::cout << "Now in enforce_block" << std::endl;
+    }
+    //############
+
     // else if not reader, will be expected to receive data from a reader, so
     // return and sit back and wait, but /don't/ call initial_done() until
     // your reader says you're ready
     Sync * sync_msg = psync_msg_(block);
     return;
   }
+
+  //########
+  // std::cout << block->name() << " 1" << std::endl;
+  //########
 
   // Assert: to reach this point, block must be a reading block
 
@@ -117,6 +127,10 @@ void EnzoInitialHdf5::enforce_block
 
   // Maintain running count of messages sent
   int count_messages[max_level_ + 1] = {};
+
+  //########
+  // std::cout << block->name() << " 2" << std::endl;
+  //########
 
   // Read in Field files
   for (size_t index=0; index<field_files_.size(); index++) {
@@ -133,6 +147,10 @@ void EnzoInitialHdf5::enforce_block
               field_loader);
   }
 
+  //########
+  // std::cout << block->name() << " 3" << std::endl;
+  //########
+
   // Read in particle files
   for (size_t index=0; index<particle_files_.size(); index++) {
     int level = particle_levels_[index];
@@ -148,6 +166,10 @@ void EnzoInitialHdf5::enforce_block
               min_level,
               particle_loader);
   }
+
+  //########
+  // std::cout << block->name() << " 4" << std::endl;
+  //########
 
   // Update all blocks in range of this reader with the number of messages sent to them.
   int lower[3], upper[3];
@@ -168,8 +190,20 @@ void EnzoInitialHdf5::enforce_block
     }
   }
 
+  //########
+  // std::cout << block->name() << " 5" << std::endl;
+  //########
+
   initialize_particle_mass(block);
+
+  //########
+  // std::cout << block->name() << " 6" << std::endl;
+  //########
   block->initial_done();
+
+  //########
+  // std::cout << block->name() << " 7" << std::endl;
+  //########
 }
 
 void EnzoInitialHdf5::load_data(int & count_messages,
@@ -184,11 +218,18 @@ void EnzoInitialHdf5::load_data(int & count_messages,
   int region_lower[3];
   cello::hierarchy()->refined_region_lower(region_lower, level-1);
 
+  //##
+  // int count = 0;
+  //##
+
   // Loop over blocks in range of this reader at the given level and use
   // the provided DataLoader to load the associated data onto each of them.
   for (int ax = lower[0]; ax < upper[0]; ax++) {
     for (int ay = lower[1]; ay < upper[1]; ay++) {
       for (int az = lower[2]; az < upper[2]; az++) {
+        //#####
+        // count++;
+        //#####
         int block_index[3] = {ax, ay, az};
         for (int i = 0; i < 3; i++) block_index[i] -= (region_lower[i] << 1);
         Index index_block = block->index_from_global(ax, ay, az, level, min_level);
@@ -196,6 +237,15 @@ void EnzoInitialHdf5::load_data(int & count_messages,
       }
     }
   }
+  //####
+  // std::cout << block->name() << " 1 " << std::endl;
+  // if (count == 0) {
+  //   std::cout << "Count is zero for level " << level << std::endl;
+  //   std::cout << "------------- RegLo is " << region_lower[0]<<","<<region_lower[1]<<","<<region_lower[2] << std::endl;
+  //   std::cout << "------------- Lower is " << lower[0]<<","<<lower[1]<<","<<lower[2] << std::endl;
+  //   std::cout << "------------- Upper is " << upper[0]<<","<<upper[1]<<","<<upper[2] << std::endl;
+  // }
+  //####
   loader.close_file();
 }
 
@@ -221,6 +271,9 @@ void EnzoInitialHdf5::get_reader_range(Index reader_index, int lower[3], int upp
 
 void EnzoBlock::p_initial_hdf5_recv(MsgInitial * msg_initial)
 {
+  //########
+  std::cout << name() << " 2 " << std::endl;
+  //########
   EnzoInitialHdf5 * initial = static_cast<EnzoInitialHdf5*> (this->initial());
   initial->recv_data(this,msg_initial);
 }
@@ -229,6 +282,9 @@ void EnzoBlock::p_initial_hdf5_recv(MsgInitial * msg_initial)
 
 void EnzoInitialHdf5::recv_data (Block * block, MsgInitial * msg_initial)
 {
+  //########
+  std::cout << block->name() << " 3 " << std::endl;
+  //########
   // Exit when count reached (set_stop() may be called at any time)
   Sync * sync_msg = psync_msg_(block);
   int count = msg_initial->count();
@@ -385,6 +441,14 @@ void DataLoader::load(int* block_index, Index index_block) {
   char * data;
   read_dataset_(&data, index_block, block_index);
 
+  //########
+  // if (index_block == block->index()) {
+  //   std::cout << "Copying local" << std::endl;
+  // } else {
+  //   std::cout << "Sending remote" << std::endl;
+  // }
+  //########
+
   (index_block == block->index()) ? copy_data_local(data) : copy_data_remote(index_block, data);
   delete_array_(&data, type_data);
 }
@@ -536,6 +600,9 @@ void FieldLoader::copy_data_remote(Index index_block, char * data) {
   MsgInitial * msg_initial = new MsgInitial;
   msg_initial->set_dataset(n4,h4,nx,ny,nz,IX,IY,IZ);
   msg_initial->set_field_data(name, data, nx*ny*nz, type_data);
+  //##############
+  // std::cout << "Sending to " << index_block.level() << std::endl;
+  //##############
   enzo::block_array()[index_block].p_initial_hdf5_recv(msg_initial);
 }
 

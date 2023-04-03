@@ -1,4 +1,7 @@
 #include "charm.hpp"
+//#################
+#include <iostream>
+//#################
 
 //======================================================================
 
@@ -136,6 +139,12 @@ CkReductionMsg * sum_long_double_2(int n, CkReductionMsg ** msgs)
   std::fill_n(accum,2,0.0);
 
   for (int i=0; i<n; i++) {
+
+    //###############################
+    // std::cout << "Size of message element " << i << " is " << msgs[i]->getSize() << " : " << sizeof(double) << " " << sizeof(long double) << std::endl;
+    // long double * values2 = (long double *) msgs[i]->getData();
+    // std::cout << "Message " << i << " is " << values2[0] << " " << values2[1] << std::endl;
+    //###############################
 
     ASSERT2("sum_long_double_2()",
 	    "CkReductionMsg actual size %d is different from expected %lu",

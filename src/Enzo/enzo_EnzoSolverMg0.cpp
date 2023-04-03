@@ -263,17 +263,25 @@ void EnzoSolverMg0::enter_solver_ (EnzoBlock * enzo_block) throw()
     // if A is singular (
 
     long double reduce[2] = {0.0, 0.0};
+    //###
+    // std::cout << enzo_block->level() << CkMyPe() << " Before: Size is " << sizeof(reduce) << std::endl;
+    //###
+
     if (is_finest_(enzo_block)) {
-      //###
-      std::cout << "Before: Size is " << sizeof(reduce) << std::endl;
-      //###
-
+      //#####
+      // std::cout << " Computing shift" << std::endl;
+      //#####
       compute_shift_(enzo_block,reduce);
-
-      //###
-      std::cout << "After : Size is " << sizeof(reduce) << std::endl;
-      //###
+      //#####
+      if (reduce[0] != 0.0){
+        // std::cout << "--------- reduce[0] Not zero" << std::endl;
+      }
+      //#####
     }
+
+    //###
+    // std::cout << enzo_block->level() << CkMyPe() << " After : Size is " << sizeof(reduce) << std::endl;
+    //###
 
     /// initiate callback for p_solver_begin_solve and contribute to
     /// sum and count

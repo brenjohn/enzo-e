@@ -226,6 +226,15 @@ protected: // functions
 /// Access the Sync counter for messages
   Sync * psync_msg_(Block * block)
   {
+    //########################
+    if (block->data() == NULL) {
+      std::cout << "Block " << block->name() << " data is null" << std::endl;
+    } else {
+      if (block->data()->scalar_data_sync() == NULL) {
+        std::cout << "Scalar data is also null" << std::endl;
+      }
+    }
+    //########################
     ScalarData<Sync> * scalar_data = block->data()->scalar_data_sync();
     ScalarDescr *      scalar_descr = cello::scalar_descr_sync();
     return scalar_data->value(scalar_descr,i_sync_msg_);
