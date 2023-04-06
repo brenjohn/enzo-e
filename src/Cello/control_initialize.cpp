@@ -98,8 +98,13 @@ void Simulation::r_initialize_block_array(CkReductionMsg * msg)
 // NEW INITIAL
 //======================================================================
 
-void  Block::initial_new_begin_(int level)
+void  Block::initial_new_begin_()
 {
+  //##################
+  // if (this->level() == 3) {
+  //   std::cout << name() << " Now in initial_new_begin_" << std::endl;
+  // }
+  //##################
   TRACE_INITIAL("initial_new_begin_",this);
   index_initial_ = 0;
 
@@ -113,6 +118,11 @@ void  Block::initial_new_begin_(int level)
 
 void  Block::initial_new_next_()
 {
+  //##################
+  // if (level() == 3) {
+  //   std::cout << name() << " Now in initial_new_next_" << std::endl;
+  // }
+  //##################
   TRACE_INITIAL("initial_new_next_()",this);
   Initial * initial = cello::problem()->initial(index_initial_);
   const bool initial_restart = cello::config()->initial_restart;

@@ -86,9 +86,10 @@ Block::Block ( process_type ip_source, MsgType msg_type )
 
   if (msg_type == MsgType::msg_refine) {
     //#########
-    if (name(thisIndex) == "B0111:100_0111:100_0111:100") {
-      std::cout << "Now in Block constructor" << std::endl;
-    }
+    // if (name(thisIndex) == "B0111:100_0111:100_0111:100") {
+    // if (level() == 3) {
+    //   std::cout << "Now in Block constructor" << std::endl;
+    // }
     //#########
     proxy_simulation[ip_source].p_get_msg_refine(thisIndex);
   }
@@ -102,9 +103,9 @@ void Block::p_set_msg_refine(MsgRefine * msg)
   performance_start_(perf_block);
 
   //##################
-  if (level() == 3) {
-    std::cout << name() << " about to call init_refine" << std::endl;
-  }
+  // if (level() == 3) {
+  //   std::cout << name() << " about to call init_refine" << std::endl;
+  // }
   //##################
 
   init_refine_ (msg->index_,
@@ -117,16 +118,16 @@ void Block::p_set_msg_refine(MsgRefine * msg)
         msg->adapt_parent_);
 
   //#############
-  if (level() == 3) {
-    std::cout << name() << " just called init_refine" << std::endl;
-  }
-  if (name() == "B0111:100_0111:100_0111:100") {
-    if (data_ == NULL) {
-      std::cout << "Data initialized as Null" << std::endl;
-    } else {
-      std::cout << "Data not initialized as Null" << std::endl;
-    }
-  }
+  // if (level() == 3) {
+  //   std::cout << name() << " just called init_refine" << std::endl;
+  // }
+  // if (name() == "B0111:100_0111:100_0111:100") {
+  //   if (data_ == NULL) {
+  //     std::cout << "Data initialized as Null" << std::endl;
+  //   } else {
+  //     std::cout << "Data not initialized as Null" << std::endl;
+  //   }
+  // }
   //#############
 
   init_adapt_(msg->adapt_parent_);
@@ -234,6 +235,12 @@ void Block::init_refine_
  int num_face_level, int * face_level,
  Adapt * adapt)
 {
+
+  //##################
+  // if (level() == 3) {
+  //   std::cout << name() << " Now in init_refine" << std::endl;
+  // }
+  //##################
 
   index_ = index;
   cycle_ = cycle;
@@ -596,6 +603,11 @@ void Block::compute_derived(const std::vector< std::string>& field_list
 
 void Block::apply_initial_(MsgRefine * msg) throw ()
 {
+  //##################
+  // if (level() == 3) {
+  //   std::cout << name() << " Now in apply_initial_" << std::endl;
+  // }
+  //##################
 #ifdef TRACE_BLOCK
   CkPrintf ("TRACE_BLOCK %s apply_initial()\n",name().c_str());
   fflush(stdout);
@@ -609,7 +621,11 @@ void Block::apply_initial_(MsgRefine * msg) throw ()
     TRACE("Block::apply_initial_()");
     if (initial_new) {
 
-      initial_new_begin_(0);
+      //######
+      // initial_new_begin_(0);
+      // TODO: Move to control_charm??
+      control_sync_barrier (CkIndex_Block::r_initial_new_begin(NULL));
+      //######
 
     } else {
       // Apply initial conditions

@@ -99,9 +99,9 @@ void EnzoSimulation::pup (PUP::er &p)
 void EnzoSimulation::p_get_msg_refine(Index index)
 {
   //#################
-  if (index.level() == 3) {
-    std::cout << "Now in p_get_msg_refine" << std::endl;
-  }
+  // if (index.level() == 3) {
+  //   std::cout << "Now in p_get_msg_refine" << std::endl;
+  // }
   //#################
   MsgRefine * msg = get_msg_refine(index);
 

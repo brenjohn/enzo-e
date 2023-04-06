@@ -162,6 +162,12 @@ EnzoBlock::EnzoBlock( process_type ip_source,  MsgType msg_type)
             CkMyPe(),(void *)this,name(thisIndex).c_str(),int(msg_type));
 #endif
 
+  //##########################
+  // if (level() == 3) {
+  //   std::cout << "Now in EnzoBlock constructor" << std::endl;
+  // }
+  //##########################
+
   if (msg_type == MsgType::msg_check) {
     proxy_enzo_simulation[ip_source].p_get_msg_check(thisIndex);
   }
@@ -189,11 +195,11 @@ void EnzoBlock::p_set_msg_refine(MsgRefine * msg)
   fflush(stdout);
 #endif
   //###########################
-  std::cout << name() << std::endl;
+  // std::cout << name() << std::endl;
   // if (name() == "B0111:100_0111:100_0111:100") {
-  if (level() == 3) {
-    std::cout << "Now in set_msg_refine" << std::endl;
-  }
+  // if (level() == 3) {
+  //   std::cout << "Now in EnzoBlock::p_set_msg_refine" << std::endl;
+  // }
   //###########################
   int io_reader = msg->restart_io_reader_;
   Block::p_set_msg_refine(msg);
@@ -537,9 +543,9 @@ void EnzoBlock::instantiate_children() {
 
     //################
     // if (name(index_child) == "B0111:100_0111:100_0111:100") {
-    if (index_child.level() == 3) {
-      std::cout << name() << " now spawning " << name(index_child) << std::endl;
-    }
+    // if (index_child.level() == 3) {
+    //   std::cout << name() << " now spawning " << name(index_child) << std::endl;
+    // }
     //################
 
     MsgRefine * msg = new MsgRefine

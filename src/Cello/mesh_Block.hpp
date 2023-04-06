@@ -260,10 +260,19 @@ public: // interface
   //--------------------------------------------------
 
   /// Initiate applying the sequence of Initial conditions
-  void initial_new_begin_(int level);
+  void r_initial_new_begin(CkReductionMsg * msg)
+  { delete msg; initial_new_begin_(); }
+  void initial_new_begin_();
+
   /// Continue to the next Initial conditions object
   void r_initial_new_next(CkReductionMsg * msg)
-  { delete msg; initial_new_next_(); }
+  { delete msg;
+    //####
+    // if (level() == 3){
+    //   std::cout << name() << " Now in r_initial_new_next" << std::endl;
+    // }
+    //####
+   initial_new_next_(); }
   void initial_new_next_();
 
   void r_end_initialize(CkReductionMsg * msg)

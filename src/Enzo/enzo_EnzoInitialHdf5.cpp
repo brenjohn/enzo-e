@@ -103,9 +103,9 @@ void EnzoInitialHdf5::enforce_block
     return;
   } else if (! is_reader_(block->index())) {
     //############
-    if (block->name() == "B0111:100_0111:100_0111:100") {
-      std::cout << "Now in enforce_block" << std::endl;
-    }
+    // if (block->name() == "B0111:100_0111:100_0111:100") {
+    //   std::cout << block->name() << " Now in enforce_block" << std::endl;
+    // }
     //############
 
     // else if not reader, will be expected to receive data from a reader, so
@@ -272,7 +272,7 @@ void EnzoInitialHdf5::get_reader_range(Index reader_index, int lower[3], int upp
 void EnzoBlock::p_initial_hdf5_recv(MsgInitial * msg_initial)
 {
   //########
-  std::cout << name() << " 2 " << std::endl;
+  // std::cout << name() << " 2 " << std::endl;
   //########
   EnzoInitialHdf5 * initial = static_cast<EnzoInitialHdf5*> (this->initial());
   initial->recv_data(this,msg_initial);
@@ -283,7 +283,7 @@ void EnzoBlock::p_initial_hdf5_recv(MsgInitial * msg_initial)
 void EnzoInitialHdf5::recv_data (Block * block, MsgInitial * msg_initial)
 {
   //########
-  std::cout << block->name() << " 3 " << std::endl;
+  // std::cout << block->name() << " 3 " << std::endl;
   //########
   // Exit when count reached (set_stop() may be called at any time)
   Sync * sync_msg = psync_msg_(block);

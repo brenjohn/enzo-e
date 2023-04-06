@@ -337,6 +337,11 @@ void Simulation::finalize() throw()
 
 void Simulation::p_get_msg_refine(Index index)
 {
+  //##########################
+  // if (index.level() == 3) {
+  //   std::cout << "Now in Simulation::p_get_msg_refine" << std::endl;
+  // }
+  //##########################
   MsgRefine * msg = get_msg_refine(index);
 #ifdef DEBUG_MSG_REFINE  
   CkPrintf ("%d DEBUG_MSG_REFINE sending %p\n",CkMyPe(),msg);
@@ -348,9 +353,11 @@ void Simulation::p_get_msg_refine(Index index)
 
 void Simulation::set_msg_refine(Index index, MsgRefine * msg)
 {
-  if (index.level() == 3) {
-    std::cout << "now in set_msg_refine" << std::endl;
-  }
+  //###############
+  // if (index.level() == 3) {
+  //   std::cout << "now in Simulation::set_msg_refine" << std::endl;
+  // }
+  //################
   if (msg_refine_map_[index] != NULL) {
    
     int v3[3];
