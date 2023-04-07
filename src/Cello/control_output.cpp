@@ -25,6 +25,11 @@
 
 void Block::output_enter_ ()
 {
+  //########
+  if (name() == "B0000_0000_0000") {
+    std::cout << name() << " now entering output phase" << std::endl;
+  }
+  //########
   TRACE_OUTPUT("Block::output_enter_()");
   performance_start_(perf_output);
   output_begin_();
@@ -35,6 +40,11 @@ void Block::output_enter_ ()
 
 void Block::output_begin_ ()
 {
+  //########
+  if (name() == "B0000_0000_0000") {
+    std::cout << name() << " now in output_begin_" << std::endl;
+  }
+  //########
   TRACE_OUTPUT("output_begin_()");
   cello::simulation() -> output_enter();
 }
@@ -47,6 +57,11 @@ void Simulation::output_enter ()
 
   // Switch from Block to Simulation parallelism
   if (sync_output_begin_.next()) {
+    //########
+    if (CkMyPe() == 0) {
+      std::cout << CkMyPe() << " simulation now in output_enter with sync_output_begin at " << sync_output_begin_.value() << " and stopping val " << sync_output_begin_.stop() << std::endl;
+    }
+    //########
     performance_->start_region(perf_output);
     set_phase(phase_output);
 
@@ -61,6 +76,11 @@ void Simulation::output_enter ()
 
 void Problem::output_next(Simulation * simulation) throw()
 {
+  //########
+  if (CkMyPe() == 0) {
+    std::cout << CkMyPe() << " simulation now in output_next" << std::endl;
+  }
+  //########
   TRACE_OUTPUT("Problem::output_next()");
 
   simulation->set_phase(phase_output);
@@ -107,6 +127,11 @@ void Problem::output_next(Simulation * simulation) throw()
 
 void Simulation::output_start(int index_output)
 {
+  //########
+  if (CkMyPe() == 0) {
+    std::cout << CkMyPe() << " simulation now in output_start" << std::endl;
+  }
+  //########
   TRACE_OUTPUT("Simulation::output_start()");
   Output * output = problem()->output(index_output);
   output->init();
@@ -279,6 +304,9 @@ void Problem::output_write
 
 void Simulation::output_exit()
 {
+  //########
+  std::cout << CkMyPe() << " simulation now in output_exit" << std::endl;
+  //########
   TRACE_OUTPUT("Simulation::output_exit()");
 
   debug_close();
@@ -291,6 +319,11 @@ void Simulation::output_exit()
 
 void Block::p_output_end()
 {
+  //########
+  if (name() == "B0000_0000_0000") {
+    std::cout << name() << " now in p_output_end" << std::endl;
+  }
+  //########
   performance_start_(perf_output);
   TRACE_OUTPUT("Block::p_output_end()");
   performance_stop_(perf_output);

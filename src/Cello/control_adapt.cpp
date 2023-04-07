@@ -55,6 +55,11 @@
 
 void Block::adapt_enter_()
 {
+  //########
+  if (name() == "B0000_0000_0000") {
+    std::cout << name() << " now entering adapt phase" << std::endl;
+  }
+  //########
   TRACE_ADAPT("adapt_enter_",this);
   if ( do_adapt_()) {
 
@@ -71,6 +76,11 @@ void Block::adapt_enter_()
 
 void Block::adapt_begin_()
 {
+  //########
+  if (name() == "B0000_0000_0000") {
+    std::cout << name() << " now enterining adapt_begin_" << std::endl;
+  }
+  //########
   TRACE_ADAPT("adapt_begin_",this);
 
   cello::simulation()->set_phase(phase_adapt);
@@ -109,6 +119,11 @@ void Block::adapt_begin_()
 /// detection.
 void Block::adapt_called_()
 {
+  //########
+  if (name() == "B0000_0000_0000") {
+    std::cout << name() << " now enterining adapt_called_" << std::endl;
+  }
+  //########
   TRACE_ADAPT("adapt_called_",this);
   if (! is_leaf()) {
     TRACE_ADAPT("adapt_barrier [not leaf]",this);
@@ -123,6 +138,11 @@ void Block::adapt_called_()
 void Block::adapt_barrier_()
 {
   if (! adapt_balanced_) {
+    //########
+    if (name() == "B0000_0000_0000") {
+      std::cout << name() << " now enterining adapt_barrier_" << std::endl;
+    }
+    //########
     adapt_balanced_ = true;
     TRACE_ADAPT("calling contribute",this);
     int changed = (is_leaf() && (level() != level_next_)) ? 1 : 0;
@@ -144,6 +164,11 @@ void Block::adapt_barrier_()
 /// adapt_end_().
 void Block::adapt_next_()
 {
+  //########
+  if (name() == "B0000_0000_0000") {
+    std::cout << name() << " now enterining adapt_next_" << std::endl;
+  }
+  //########
   TRACE_ADAPT("adapt_next contribute called_",this);
   update_levels_();
 
@@ -202,6 +227,11 @@ void Block::update_levels_ ()
 
 void Block::adapt_update_()
 {
+  //########
+  if (name() == "B0000_0000_0000") {
+    std::cout << name() << " now enterining adapt_update_" << std::endl;
+  }
+  //########
   TRACE_ADAPT("adapt_update_",this);
   if (index_.is_root() && (adapt_changed_ != 0)) {
 #ifdef TRACE_DONE_INSERTING
@@ -224,6 +254,11 @@ void Block::adapt_update_()
 /// been deleted.
 void Block::adapt_end_()
 {
+  //########
+  if (name() == "B0000_0000_0000") {
+    std::cout << name() << " now enterining adapt_end_" << std::endl;
+  }
+  //########
   TRACE_ADAPT("adapt_end_",this);
   adapt_.reset_face_level(Adapt::LevelType::last);
 

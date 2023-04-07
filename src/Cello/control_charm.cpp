@@ -79,6 +79,12 @@ void Block::adapt_exit_()
   TRACE_CONTROL("adapt_exit");
 
   //  verify_neighbors();
+
+  //#####
+  if (name() == "B0000_0000_0000") {
+    std::cout << name() << " now in adapt_exit_" << std::endl;
+  }
+  //#####
   
   control_sync_quiescence(CkIndex_Main::p_output_enter());
 }
@@ -87,6 +93,11 @@ void Block::adapt_exit_()
 
 void Block::output_exit_()
 {
+  //########
+  if (name() == "B0000_0000_0000") {
+    std::cout << name() << " now in output_exit_" << std::endl;
+  }
+  //########
   performance_start_(perf_output);
 
   TRACE_CONTROL("output_exit");
@@ -110,6 +121,11 @@ void Block::output_exit_()
 
 void Block::stopping_exit_()
 {
+  //########
+  if (name() == "B0000_0000_0000") {
+    std::cout << name() << " now in stopping_exit_" << std::endl;
+  }
+  //########
   TRACE_CONTROL("stopping_exit");
 
   if (cello::simulation()->cycle_changed()) {

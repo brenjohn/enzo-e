@@ -21,6 +21,11 @@
 
 void Block::compute_enter_ ()
 {
+  //########
+  if (name() == "B0000_0000_0000") {
+    std::cout << name() << " now entering compute phase" << std::endl;
+  }
+  //########
   performance_start_(perf_compute,__FILE__,__LINE__);
   compute_begin_();
   performance_stop_(perf_compute,__FILE__,__LINE__);

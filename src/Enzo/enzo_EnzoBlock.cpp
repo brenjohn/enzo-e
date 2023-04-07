@@ -521,6 +521,10 @@ void EnzoBlock::instantiate_children() {
   int nx, ny, nz;
   data()->field().size(&nx, &ny, &nz);
 
+  //####
+  thisProxy.beginInserting();
+  //####
+
   const int rank = cello::rank();
   ItChild it_child(rank);
   int ic3[3];
@@ -549,6 +553,10 @@ void EnzoBlock::instantiate_children() {
 
     children_.push_back(index_child);
   }
+
+  //###
+  thisProxy.doneInserting();
+  //###
 
   adapt_.set_valid(false);
   is_leaf_ = false;

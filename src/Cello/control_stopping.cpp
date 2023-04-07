@@ -36,6 +36,11 @@
 
 void Block::stopping_enter_()
 {
+  //########
+  if (name() == "B0000_0000_0000") {
+    std::cout << name() << " now entering stopping phase" << std::endl;
+  }
+  //########
   stopping_begin_();
 }
 
@@ -180,6 +185,7 @@ void Block::r_stopping_compute_timestep(CkReductionMsg * msg)
 
 void Block::stopping_balance_()
 {
+  
   TRACE_STOPPING("Block::stopping_balance_");
 
   Schedule * schedule = cello::simulation()->schedule_balance();
