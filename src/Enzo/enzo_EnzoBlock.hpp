@@ -178,7 +178,7 @@ public: // interface
   bool spawn_child_blocks();
 
   /// Create child blocks.
-  virtual void create_child_blocks();
+  virtual void create_initial_child_blocks();
   void instantiate_children();
 
   //----------------------------------------------------------------------

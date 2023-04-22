@@ -509,7 +509,7 @@ bool EnzoBlock::spawn_child_blocks(){
   return false;
 }
 
-void EnzoBlock::create_child_blocks(){
+void EnzoBlock::create_initial_child_blocks(){
   bool spawn_children = spawn_child_blocks();
   if (spawn_children) {instantiate_children();}
 }

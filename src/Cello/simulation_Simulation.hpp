@@ -401,6 +401,14 @@ public: // virtual functions
   int refresh_count() const
   { return refresh_list_.size(); }
 
+  //######################################
+  //--------------------------------------
+  // Initialization
+  //--------------------------------------
+  int initial_block_count () throw();
+  void p_initial_block_created() throw();
+  //######################################
+
 protected: // functions
 
   /// Initialize the Config object
@@ -546,6 +554,11 @@ protected: // attributes
 
   /// Particle descriptor
   ParticleDescr * particle_descr_;
+
+  //##############################
+  /// Restart synchronization
+  Sync sync_init_block_count_;
+  //##############################
 
   /// Output synchronization (depreciated)
   Sync sync_output_begin_;

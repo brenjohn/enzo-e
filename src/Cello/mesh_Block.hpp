@@ -189,7 +189,7 @@ public: // interface
   Index index_from_global(int ix, int iy, int iz, int level, int min_level);
 
   /// Create child blocks during initialization
-  virtual void create_child_blocks() {};
+  virtual void create_initial_child_blocks() {};
 
   /// Return boolean indicating if the indicated block should refine
   /// during the initialization phase.
@@ -260,6 +260,9 @@ public: // interface
   //--------------------------------------------------
 
   /// Initiate applying the sequence of Initial conditions
+  //#####################################
+  void p_initial_new_begin() { initial_new_begin_(); }
+  //#####################################
   void r_initial_new_begin(CkReductionMsg * msg)
   { delete msg; initial_new_begin_(); }
   void initial_new_begin_();
