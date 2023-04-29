@@ -846,6 +846,11 @@ int Simulation::initial_block_count() throw() {
   hierarchy_->root_blocks(&nx, &ny, &nz);
   int block_count = nx * ny * nz;
 
+  while (nx > 0) {
+    nx >>= 1; ny >>= 1; nz >>= 1;
+    block_count += nx * ny * nz;
+  }
+
   int lower[3], upper[3];
   int num_refined_levels = hierarchy_->refined_region_lower().size();
   for (int l=0; l<num_refined_levels; l++) {
@@ -857,6 +862,8 @@ int Simulation::initial_block_count() throw() {
 
     block_count += nx * ny * nz;
   }
+
+  std::cout << "block count is " << block_count << std::endl;
 
   return block_count;
 }

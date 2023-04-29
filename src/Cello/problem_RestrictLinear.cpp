@@ -60,6 +60,21 @@ int RestrictLinear::apply_
     bool accumulate)
 {
 
+	//#################################################
+	if (nd3_c == NULL)
+		std::cout << "nd3_c is Null!!!" << std::endl;
+	if (im3_c == NULL)
+		std::cout << "im3_c is Null!!!" << std::endl;
+	if (n3_c == NULL)
+		std::cout << "n3_c is Null!!!" << std::endl;
+	if (nd3_f == NULL)
+		std::cout << "nd3_f is Null!!!" << std::endl;
+	if (im3_f == NULL)
+		std::cout << "im3_f is Null!!!" << std::endl;
+	if (n3_f == NULL)
+		std::cout << "n3_f is Null!!!" << std::endl;
+	//#################################################
+
   const int rank = (nd3_f[1] == 1) ? 1 : ((nd3_f[2] == 1) ? 2 : 3);
 
   const int dx = 1;
