@@ -492,6 +492,11 @@ void FieldFace::face_to_face (Field field_src, Field field_dst)
     char * values_src = field_src.values(index_src);
     char * values_dst = field_dst.values(index_dst);
 
+    //#########################################
+    // if (values_src)
+    //   std::cout << "values_src is null in FieldFace::face_to_face" << std::endl;
+    //#########################################
+
     // scale by density if needed to convert to conservative form
     mul_by_density_(field_src,index_src,is3,ns3,m3);
     

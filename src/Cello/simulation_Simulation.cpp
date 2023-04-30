@@ -842,6 +842,7 @@ void Simulation::initialize_block_array_() throw()
 
 //######################################################################
 int Simulation::initial_block_count() throw() {
+  // TODO: Generalise this to arbitrary rank
   int nx, ny, nz;
   hierarchy_->root_blocks(&nx, &ny, &nz);
   int block_count = nx * ny * nz;
@@ -860,7 +861,7 @@ int Simulation::initial_block_count() throw() {
     ny = upper[1] - lower[1]; 
     nz = upper[2] - lower[2];
 
-    block_count += nx * ny * nz;
+    block_count += 8 * nx * ny * nz;
   }
 
   std::cout << "block count is " << block_count << std::endl;
@@ -873,6 +874,7 @@ void Simulation::p_initial_block_created() throw() {
     hierarchy_->block_array().doneInserting();
     hierarchy_->block_array().p_initial_new_begin();
   }
+  // std::cout << "initial block sync count is now " << sync_init_block_count_.value() << std::endl;
 }
 //######################################################################
 //----------------------------------------------------------------------

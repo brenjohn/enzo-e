@@ -173,6 +173,45 @@ void EnzoProlong::apply_
   const int mf = m3_f[0]*m3_f[1]*m3_f[2];
   enzo_float * temp_f = (accumulate) ? (new enzo_float [mf]) : values_f;
 
+  //######################################################
+  // if (values_f)
+	// 	std::cout << "values_f is Null!!!" << std::endl;
+	// if (values_c)
+	// 	std::cout << "values_c is Null!!!" << std::endl;
+  // if (m3_f)
+	// 	std::cout << "m3_f is Null!!!" << std::endl;
+	// if (o3_f)
+	// 	std::cout << "o3_f is Null!!!" << std::endl;
+	// if (n3_f)
+	// 	std::cout << "n3_f is Null!!!" << std::endl;
+	// if (m3_c)
+	// 	std::cout << "m3_c is Null!!!" << std::endl;
+	// if (o3_c)
+	// 	std::cout << "o3_c is Null!!!" << std::endl;
+	// if (n3_c)
+	// 	std::cout << "n3_c is Null!!!" << std::endl;
+
+
+  // if (pdims)
+	// 	std::cout << "pdims is Null!!!" << std::endl;
+	// if (pstart)
+	// 	std::cout << "pstart is Null!!!" << std::endl;
+  // if (pend)
+	// 	std::cout << "pend is Null!!!" << std::endl;
+	// if (r3)
+	// 	std::cout << "r3 is Null!!!" << std::endl;
+	// if (gdims)
+	// 	std::cout << "gdims is Null!!!" << std::endl;
+	// if (gstart)
+	// 	std::cout << "gstart is Null!!!" << std::endl;
+	// if (work)
+	// 	std::cout << "work is Null!!!" << std::endl;
+	// if (method_)
+	// 	std::cout << "method_ is Null!!!" << std::endl;
+  // if (positive_)
+	// 	std::cout << "positive_ is Null!!!" << std::endl;
+  //######################################################
+
   FORTRAN_NAME(interpolate)
     (&rank,
      ((enzo_float*)(values_c))+o_c, pdims, pstart, pend, r3,
