@@ -111,8 +111,6 @@ void Block::p_set_msg_refine(MsgRefine * msg)
 
   performance_stop_(perf_block);
 
-  create_child_blocks();
-
 #ifdef TRACE_BLOCK
   {
   CkPrintf ("%d %s index TRACE_BLOCK p_set_msg_refine(MsgRefine) done\n",
@@ -585,8 +583,13 @@ void Block::apply_initial_(MsgRefine * msg) throw ()
     TRACE("Block::apply_initial_()");
     if (initial_new) {
 
-      // TODO: Move to control_charm??
-      control_sync_barrier (CkIndex_Block::r_initial_new_begin(NULL));
+      // Create child blocks if this block refines during the initialization
+      // phase.
+      create_initial_child_blocks();
+
+      // Tell the root Simulation object this block is inserted and ready 
+      // to initialize data.
+      proxy_simulation[0].p_initial_block_created();
 
     } else {
       // Apply initial conditions
@@ -1278,7 +1281,8 @@ bool Block::check_position_in_block
 
 //----------------------------------------------------------------------
 
-bool Block::refine_during_initialization(Index index){
+bool Block::refine_during_initialization(Index index) const throw()
+{
   int level = index.level();
   if (level >= 0) {
     
